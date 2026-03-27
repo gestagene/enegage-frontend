@@ -3,12 +3,20 @@ import Sidebar from "../Sidebar";
 import RecentTab from "../RecentTab";
 import LogInModal from "@/components/LogInModal";
 import { Outlet } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function RootLayout() {
   const [query, setQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  useEffect(() => {
+    const hash = window.location.hash;
+
+    if (hash && hash.includes("type=signup")) {
+      window.history.replaceState(null, "", window.location.pathname);
+      setShowLoginModal(true);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">

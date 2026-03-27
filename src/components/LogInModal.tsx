@@ -1,22 +1,24 @@
 import "@/pages/login.css";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { MdClose } from "react-icons/md";
 import { GoogleLogin } from "@react-oauth/google";
 import { userLogin } from "@/services/userLogin";
+import { userSignup } from "@/services/userSignup";
 
 interface LogInModalProps {
-  open: boolean;
   onClose: () => void;
   onSuccess: () => void;
   children?: React.ReactNode;
 }
 
 export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showSignUp, setShowSignUp] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const [successMessage, setSuccessMessage] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,6 +26,23 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
     try {
       await userLogin(email, password);
       onSuccess();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }
+
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    try {
+      await userSignup(email, password, username);
+      setSuccessMessage("Check your email to confirm your account.");
+      setEmail("");
+      setPassword("");
+      setUsername("");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 10000);
     } catch (err: any) {
       setError(err.message);
     }
@@ -45,11 +64,9 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
             <MdClose />
           </button>
           <div className="justify-center items-center text-center flex flex-col space-y-3">
-            {!showSignUp ? (
-              <h1 className="font-bold text-2xl">Log In</h1>
-            ) : (
-              <h1 className="font-bold text-2xl">Sign Up</h1>
-            )}
+            <h1 className="font-bold text-2xl">
+              {!showSignUp ? "Log In" : "Sign Up"}
+            </h1>
             <p className="text-sm">
               By continuing, you agree to our User Agreement and acknowledge
               that you understand the Privacy Policy.
@@ -111,6 +128,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
                   <button
                     onClick={() => {
                       setShowSignUp(true);
+                      setUsername("");
                       setEmail("");
                       setPassword("");
                       setError("");
@@ -124,7 +142,10 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
             </div>
           ) : (
             <div className="signup-container sm:min-h-75">
-              <form className="flex flex-col space-y-9 justify-center items-center py-4">
+              <form
+                onSubmit={handleSignup}
+                className="flex flex-col space-y-3 justify-center items-center py-4"
+              >
                 <div className="input-group">
                   <input
                     type="text"
@@ -134,12 +155,41 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
                   />
                   <label className="text-sm">Email</label>
                 </div>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    maxLength={20}
+                    required
+                    value={username}
+                    onChange={(e) => {
+                      const cleaned = e.target.value
+                        .replace(/[^a-zA-Z0-9_]/g, "")
+                        .replace(/__+/g, "_")
+                        .replace(/^_/, "");
+                      setUsername(cleaned);
+                    }}
+                  />
+                  <label className="text-sm">User Name</label>
+                </div>
+                <div className="input-group">
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <label className="text-sm">Password</label>
+                </div>
                 <input
                   type="submit"
-                  disabled={!email}
+                  disabled={!email || !password || !username}
                   className="align-bottom bg-green-900 text-white py-2 px-4 rounded-full hover:cursor-pointer hover:brightness-85 w-75 disabled:opacity-75 duration-200"
                   value="Continue"
                 />
+                {successMessage && (
+                  <p className="text-green-600 text-sm">{successMessage}</p>
+                )}
+                {error && <p className="text-red-500 text-sm">{error}</p>}
               </form>
               <span className="text-xs">
                 Already a user?{" "}
@@ -148,6 +198,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
                     setShowSignUp(false);
                     setEmail("");
                     setPassword("");
+                    setUsername("");
                     setError("");
                   }}
                   className="text-[#0000EE] hover:text-[#551A8B] text-xs"
