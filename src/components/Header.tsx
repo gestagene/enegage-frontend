@@ -3,7 +3,7 @@ import { IoCreateOutline } from "react-icons/io5";
 import { RiNotification2Line } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { useState } from "react";
+import { userLogout } from "@/services/userLogout";
 
 interface HeaderProps {
   query: string;
@@ -61,7 +61,9 @@ export default function Header({
                   size={30}
                   className="hover:bg-gray-200 hover:cursor-pointer rounded-2xl p-1.5"
                 />
-                <CgProfile size={30} className="ml-2" />
+                <button onClick={userLogout}>
+                  <CgProfile size={30} className="ml-2" />
+                </button>
               </div>
             )}
           </div>
