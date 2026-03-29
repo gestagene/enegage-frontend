@@ -2,8 +2,7 @@ import "@/pages/login.css";
 import { useState, useRef } from "react";
 import { MdClose } from "react-icons/md";
 import { GoogleLogin } from "@react-oauth/google";
-import { userLogin } from "@/services/userLogin";
-import { userSignup } from "@/services/userSignup";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LogInModalProps {
   onClose: () => void;
@@ -12,41 +11,22 @@ interface LogInModalProps {
 }
 
 export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [showSignUp, setShowSignUp] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const [successMessage, setSuccessMessage] = useState("");
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    try {
-      await userLogin(email, password);
-      onSuccess();
-    } catch (err: any) {
-      setError(err.message);
-    }
-  }
-
-  async function handleSignup(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    try {
-      await userSignup(email, password, username);
-      setSuccessMessage("Check your email to confirm your account.");
-      setEmail("");
-      setPassword("");
-      setUsername("");
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 10000);
-    } catch (err: any) {
-      setError(err.message);
-    }
-  }
+  const {
+    username,
+    setUsername,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    error,
+    showSignUp,
+    successMessage,
+    handleLogin,
+    handleSignup,
+    switchToSignUp,
+    switchToLogin,
+  } = useAuth(onSuccess, onClose);
   return (
     <>
       <div
@@ -79,6 +59,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
                 console.log("Login Failed");
               }}
             />
+
             <div className="flex items-center gap-3 w-full py-4">
               <hr className="flex-1 border-gray-200" />
               <span className="text-sm text-gray-400">OR</span>
@@ -88,7 +69,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
           {!showSignUp ? (
             <div className="login-container sm:min-h-75">
               <form
-                onSubmit={handleSubmit}
+                onSubmit={handleLogin}
                 className="flex flex-col space-y-6 justify-center items-center py-4"
               >
                 <div className="input-group">
@@ -127,11 +108,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
                   New to enegage?{" "}
                   <button
                     onClick={() => {
-                      setShowSignUp(true);
-                      setUsername("");
-                      setEmail("");
-                      setPassword("");
-                      setError("");
+                      switchToSignUp();
                     }}
                     className="text-[#0000EE] hover:text-[#551A8B] text-xs"
                   >
@@ -195,11 +172,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
                 Already a user?{" "}
                 <button
                   onClick={() => {
-                    setShowSignUp(false);
-                    setEmail("");
-                    setPassword("");
-                    setUsername("");
-                    setError("");
+                    switchToLogin();
                   }}
                   className="text-[#0000EE] hover:text-[#551A8B] text-xs"
                 >
