@@ -23,9 +23,58 @@ export function deleteCookie(name: string): void {
 }
 
 export const cookieStorage: Storage = {
-  getItem: (key: string): string | null => getCookie(key),
-  setItem: (key: string, value: string): void => setCookie(key, value),
-  removeItem: (key: string): void => deleteCookie(key),
+  getItem: (key: string): string | null => {
+    // Try reading as a single cookie first
+    const single = getCookie(key);
+    if (single) return single;
+
+    // Fall back to reading split cookies and reassembling
+    const parts: string[] = [];
+    let i = 0;
+    while (true) {
+      const part = getCookie(`${key}.${i}`);
+      if (!part) break;
+      parts.push(part);
+      i++;
+    }
+    return parts.length > 0 ? parts.join("") : null;
+  },
+
+  setItem: (key: string, value: string): void => {
+    // Delete any old split cookies first
+    let i = 0;
+    while (getCookie(`${key}.${i}`)) {
+      deleteCookie(`${key}.${i}`);
+      i++;
+    }
+
+    const chunkSize = 3000; // safe under 4KB limit
+
+    if (value.length <= chunkSize) {
+      // Small enough — write as single cookie
+      setCookie(key, value);
+    } else {
+      // Too large — split into chunks
+      deleteCookie(key);
+      let index = 0;
+      for (let j = 0; j < value.length; j += chunkSize) {
+        setCookie(`${key}.${index}`, value.slice(j, j + chunkSize));
+        index++;
+      }
+    }
+  },
+
+  removeItem: (key: string): void => {
+    // Delete main cookie
+    deleteCookie(key);
+    // Delete any split cookies
+    let i = 0;
+    while (getCookie(`${key}.${i}`)) {
+      deleteCookie(`${key}.${i}`);
+      i++;
+    }
+  },
+
   clear: (): void => {},
   key: (_index: number): string | null => null,
   length: 0,
