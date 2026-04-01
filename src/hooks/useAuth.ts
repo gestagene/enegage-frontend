@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { userLogin } from "@/services/userLogin";
+import { userLogin, googleLogin } from "@/services/userLogin.js";
 import { userSignup } from "@/services/userSignup";
 import supabase from "@/services/supabaseClient";
 
@@ -11,15 +11,30 @@ export function useAuth(onSuccess: () => void, onClose: () => void) {
   const [showSignUp, setShowSignUp] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  async function handleGoogleLogin(credentialResponse: any) {
+    try {
+      const data = await googleLogin(credentialResponse.credential);
+      await supabase.auth.setSession({
+        access_token: data.session.access_token,
+        refresh_token: data.session.refresh_token,
+      });
+      onSuccess();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  }
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     try {
       const data = await userLogin(email, password);
+
       await supabase.auth.setSession({
         access_token: data.session.access_token,
         refresh_token: data.session.refresh_token,
       });
+
       onSuccess();
     } catch (err: any) {
       setError(err.message);
@@ -68,6 +83,7 @@ export function useAuth(onSuccess: () => void, onClose: () => void) {
     showSignUp,
     successMessage,
     handleLogin,
+    handleGoogleLogin,
     handleSignup,
     switchToSignUp,
     switchToLogin,

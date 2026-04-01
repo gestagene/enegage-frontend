@@ -1,5 +1,5 @@
 import "@/pages/login.css";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import { MdClose } from "react-icons/md";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,7 +10,7 @@ interface LogInModalProps {
   children?: React.ReactNode;
 }
 
-export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
+export default function LogInModal({ onClose, onSuccess }: LogInModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const {
     username,
@@ -23,10 +23,12 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
     showSignUp,
     successMessage,
     handleLogin,
+    handleGoogleLogin,
     handleSignup,
     switchToSignUp,
     switchToLogin,
   } = useAuth(onSuccess, onClose);
+
   return (
     <>
       <div
@@ -39,7 +41,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
         <div className="relative flex flex-col space-y-1 shadow-2xl rounded-lg w-full max-w-md p-6 bg-white px-10 min-h-auto sm:min-h-auto ">
           <button
             onClick={onClose}
-            className="absolute top-0.75 right-0.75 p-2 bg-gray-200 rounded-full mr-2 mt-2"
+            className="absolute top-0.75 right-0.75 p-2 bg-gray-200 rounded-full mr-2 mt-2 hover:brightness-75 hover:cursor-pointer"
           >
             <MdClose />
           </button>
@@ -52,9 +54,7 @@ export default function LogInPage({ onClose, onSuccess }: LogInModalProps) {
               that you understand the Privacy Policy.
             </p>
             <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                console.log(credentialResponse);
-              }}
+              onSuccess={handleGoogleLogin}
               onError={() => {
                 console.log("Login Failed");
               }}
