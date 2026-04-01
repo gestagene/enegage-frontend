@@ -1,5 +1,7 @@
 import supabase from "@/services/supabaseClient";
+import { googleLogout } from "@react-oauth/google";
 
 export async function userLogout() {
-  await supabase.auth.signOut(); // clears cookie automatically
+  await supabase.auth.signOut();
+  googleLogout();
 }

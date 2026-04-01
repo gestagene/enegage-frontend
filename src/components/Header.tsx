@@ -3,19 +3,21 @@ import { IoCreateOutline } from "react-icons/io5";
 import { RiNotification2Line } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { userLogout } from "@/services/userLogout";
 
 interface HeaderProps {
   query: string;
   isLoggedIn: boolean;
   onSearch: (query: string) => void;
   onLoginClick: () => void;
+  onMenuClick: () => void;
+  handleProfileMenu: () => void;
 }
 
 export default function Header({
   onSearch,
   isLoggedIn,
   onLoginClick,
+  handleProfileMenu,
 }: HeaderProps) {
   return (
     <>
@@ -44,7 +46,7 @@ export default function Header({
             {!isLoggedIn ? (
               <button
                 onClick={onLoginClick}
-                className="rounded-full p-2 px-4 text-white bg-green-900/90"
+                className="rounded-full p-2 px-4 text-white bg-green-900/90 hover:brightness-75 hover:cursor-pointer"
               >
                 Log In
               </button>
@@ -61,7 +63,10 @@ export default function Header({
                   size={30}
                   className="hover:bg-gray-200 hover:cursor-pointer rounded-2xl p-1.5"
                 />
-                <button onClick={userLogout}>
+                <button
+                  onClick={handleProfileMenu}
+                  className="hover:cursor-pointer"
+                >
                   <CgProfile size={30} className="ml-2" />
                 </button>
               </div>

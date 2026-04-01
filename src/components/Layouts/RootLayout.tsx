@@ -5,16 +5,17 @@ import LogInModal from "@/components/LogInModal";
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import supabase from "@/services/supabaseClient";
+import ProfileMenu from "@/components/ProfileMenu";
 
 export default function RootLayout() {
   const [query, setQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const hash = window.location.hash;
-
     if (hash && hash.includes("type=signup")) {
       window.history.replaceState(null, "", window.location.pathname);
       setShowLoginModal(true);
@@ -30,7 +31,7 @@ export default function RootLayout() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
-      if (!session) setShowLoginModal(false); // close modal on logout
+      if (!session) setShowLoginModal(false);
     });
 
     return () => subscription.unsubscribe();
@@ -51,6 +52,8 @@ export default function RootLayout() {
         onSearch={setQuery}
         isLoggedIn={isLoggedIn}
         onLoginClick={() => setShowLoginModal(true)}
+        onMenuClick={() => setShowProfileMenu(true)}
+        handleProfileMenu={() => setShowProfileMenu((prevState) => !prevState)}
       />{" "}
       {showLoginModal && (
         <LogInModal
@@ -60,6 +63,14 @@ export default function RootLayout() {
           }}
           onClose={() => {
             setShowLoginModal(false);
+          }}
+        />
+      )}
+      {showProfileMenu && (
+        <ProfileMenu
+          onLogout={() => {
+            setShowProfileMenu(false);
+            setIsLoggedIn(false);
           }}
         />
       )}
