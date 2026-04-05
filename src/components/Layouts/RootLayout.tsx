@@ -6,13 +6,27 @@ import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import supabase from "@/services/supabaseClient";
 import ProfileMenu from "@/components/ProfileMenu";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function RootLayout() {
   const [query, setQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showNav, setShowNav] = useLocalStorage("showNav", true);
   const [isLoading, setIsLoading] = useState(true);
+  const [forceLogin, setForceLogin] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const protectedRoutes = ["/submit"];
+  useEffect(() => {
+    const isProtected = protectedRoutes.includes(location.pathname);
+    if (isProtected && !isLoggedIn) {
+      setForceLogin(true);
+    }
+  }, [location.pathname, isLoggedIn, isLoading]);
 
   useEffect(() => {
     const hash = window.location.hash;
@@ -55,6 +69,19 @@ export default function RootLayout() {
         onMenuClick={() => setShowProfileMenu(true)}
         handleProfileMenu={() => setShowProfileMenu((prevState) => !prevState)}
       />{" "}
+      {forceLogin && !isLoggedIn && (
+        <LogInModal
+          onSuccess={() => {
+            setIsLoggedIn(true);
+            setForceLogin(false);
+            setShowLoginModal(false);
+          }}
+          onClose={() => {
+            setForceLogin(false);
+            navigate("/"); // ← redirect to home on close
+          }}
+        />
+      )}
       {showLoginModal && (
         <LogInModal
           onSuccess={() => {
@@ -75,9 +102,13 @@ export default function RootLayout() {
         />
       )}
       <div className="main-content-area">
-        <Sidebar />
-        <main className="flex flex-col gap-4 md:gap-0 p-4 divide-y divide-gray-200 w-full">
-          <Outlet context={{ query }} />
+        <Sidebar
+          isCollapsed={!showNav}
+          onCollapse={() => setShowNav(!showNav)}
+        />
+
+        <main className="flex flex-col gap-4 md:gap-0 p-4 w-full">
+          {forceLogin && !isLoggedIn ? <div /> : <Outlet context={{ query }} />}
         </main>
         <RecentTab />
       </div>
