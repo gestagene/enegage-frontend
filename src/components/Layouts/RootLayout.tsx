@@ -21,6 +21,8 @@ export default function RootLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const protectedRoutes = ["/submit"];
+  const hideRecentTab = ["/submit"];
+
   useEffect(() => {
     const isProtected = protectedRoutes.includes(location.pathname);
     if (isProtected && !isLoggedIn) {
@@ -78,7 +80,7 @@ export default function RootLayout() {
           }}
           onClose={() => {
             setForceLogin(false);
-            navigate("/"); // ← redirect to home on close
+            navigate("/");
           }}
         />
       )}
@@ -107,10 +109,16 @@ export default function RootLayout() {
           onCollapse={() => setShowNav(!showNav)}
         />
 
-        <main className="flex flex-col gap-4 md:gap-0 p-4 w-full">
-          {forceLogin && !isLoggedIn ? <div /> : <Outlet context={{ query }} />}
+        <main className="flex flex-1 p-4 w-full justify-center">
+          {forceLogin && !isLoggedIn ? (
+            <div />
+          ) : (
+            <div className="flex flex-1 justify-center ">
+              <Outlet context={{ query }} />
+              {!hideRecentTab.includes(location.pathname) && <RecentTab />}
+            </div>
+          )}
         </main>
-        <RecentTab />
       </div>
     </div>
   );
