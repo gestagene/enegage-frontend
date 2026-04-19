@@ -46,11 +46,12 @@ export async function createImagePost(
 export async function getPosts() {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`);
 
-  const data = await response.json();
+  const { posts } = await response.json();
+  console.log({ posts });
 
   if (!response.ok) {
-    throw new Error(data.message);
+    throw new Error(posts.message);
   }
 
-  return data.posts;
+  return posts;
 }

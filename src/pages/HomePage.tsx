@@ -1,29 +1,16 @@
 import { useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PostCard from "@/components/PostCard";
-import type { Post } from "@/components/PostCard";
+import type { Post } from "@/types/post.ts";
 import { getPosts } from "@/services/posts";
+import { useFetch } from "@/hooks/useFetch";
 
 export default function Home() {
   const { query } = useOutletContext<{ query: string }>();
   const [displayLimit, setDisplayLimit] = useState(10);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const data = await getPosts();
-        setPosts(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchPosts();
-  }, []);
+  const { data, isLoading, error } = useFetch<Post[]>(getPosts, []);
+  const posts = data ?? [];
 
   const filtered = posts.filter((post) =>
     post.title.toLowerCase().includes(query.toLowerCase())
@@ -48,9 +35,13 @@ export default function Home() {
     );
   }
   if (error) {
-    return <p className="text-red-500 text-sm">{error}</p>;
+    return (
+      <div>
+        <p className="text-red-500 text-md text-center w-full">{error}</p>
+      </div>
+    );
   }
-  if (posts.length === 0)
+  if (!posts || posts.length === 0)
     return (
       <p className="text-center text-md text-gray-600 w-full">
         No posts found..
