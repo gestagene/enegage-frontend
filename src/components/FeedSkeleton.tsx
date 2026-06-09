@@ -9,8 +9,13 @@ export default function FeedSkeleton() {
             <span className="rounded-sm w-16 h-3 bg-gray-200/75"></span>
             <span className="rounded-sm w-1/4 h-3 bg-gray-200/75"></span>
           </div>
-          <div className="px-2 py-1 text-sm w-full">
-            <div className="bg-gray-200/75 h-28 w-full animate-pulse rounded-md"></div>
+          <div className="px-2 py-2 text-sm w-full space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-gray-200/75 h-2 w-full animate-pulse rounded-md"
+              ></div>
+            ))}
           </div>
           <div className="animate-pulse flex space-x-2 px-2 py-1">
             <div className="py-1 px-1 bg-gray-200/75 rounded-full h-2 w-15 "></div>
