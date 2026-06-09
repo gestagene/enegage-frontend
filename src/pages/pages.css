@@ -1,0 +1,136 @@
+.input-group {
+  position: relative;
+  width: 100%;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 12px;
+  border-radius: 12px;
+  outline: none;
+  font-size: 16px;
+  background: #eeeeee;
+}
+
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0 6px;
+  color: #888;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.1s ease;
+}
+
+.input-group label::after {
+  content: "*";
+  font-size: 0.8rem;
+  color: red;
+  margin-left: 0.5rem;
+}
+
+.input-group input:focus + label,
+.input-group input:valid + label {
+  bottom: -15px;
+  font-size: 9px;
+}
+
+.input-group > input:focus {
+  border: solid 0.1px #3b82f6;
+}
+
+.submit-type {
+  width: 100%;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  display: block;
+  font: 300;
+}
+
+.submit-type:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+  border-bottom: solid 2px #3575dd;
+}
+
+.submit-body-group {
+  padding-top: 2rem;
+  position: relative;
+  width: 100%;
+}
+.submit-body-group input,
+textarea {
+  width: 40rem;
+  padding: 14px 12px;
+  border-radius: 12px;
+  outline: none;
+  font-size: 16px;
+  background: #ffffff;
+  border: solid 1px #dbdbdb;
+}
+
+.submit-body-group input:hover {
+  border: solid 1px #c5c5c5;
+}
+
+.submit-body-group label {
+  position: absolute;
+  left: 12px;
+  top: 70%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0 6px;
+  color: #888;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.submit-body-group label {
+  position: absolute;
+  left: 12px;
+  top: 70%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0 6px;
+  color: #888;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.submit-body-group label::after {
+  content: "*";
+  font-size: 0.8rem;
+  color: red;
+  margin-left: 0.5rem;
+}
+
+#body-label {
+  position: absolute;
+  left: 12px;
+  top: 20%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0 6px;
+  color: #888;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.submit-body-group textarea:focus {
+  border: solid 0.1px #3b82f6;
+}
+.submit-body-group input:focus + label,
+.submit-body-group input:valid + label {
+  bottom: -4rem;
+  font-size: 11px;
+}
+
+.submit-body-group > input:focus {
+  border: solid 0.1px #3b82f6;
+}
