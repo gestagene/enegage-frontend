@@ -50,7 +50,7 @@ export default function SubmitPage() {
           postTitle,
           type,
           session.user.id,
-          imageFile
+          imageFile,
         );
         navigate(`/posts/${post.id}`);
       } else {
@@ -59,7 +59,7 @@ export default function SubmitPage() {
           postTitle,
           body,
           type,
-          session.user.id
+          session.user.id,
         );
         navigate(`/posts/${post.id}`);
       }
@@ -76,15 +76,15 @@ export default function SubmitPage() {
 
   return (
     <div>
-      <div className="w-full flex flex-col justify-center items-center overflow-x-hidden">
-        <div className="container relative">
+      <div className="max-w-3xl w-full shrink-0 flex flex-col justify-center items-center   px-12 py-9">
+        <div className="w-full relative">
           <h1 className="font-bold text-2xl py-3">Create a post</h1>
-          <div className="relative flex space-x-2 sm:w-150 text-sm ">
+          <div className="relative flex w-full text-sm">
             <button
               onClick={() => {
                 handleTypeChange(PostType.Text);
               }}
-              className="submit-type"
+              className="w-full pb-1 pt-1 block rounded-sm hover:bg-gray-200/50 hover:cursor-pointer"
             >
               Text
             </button>
@@ -92,7 +92,7 @@ export default function SubmitPage() {
               onClick={async () => {
                 handleTypeChange(PostType.Image);
               }}
-              className="submit-type"
+              className="w-full pb-1 pt-1 block rounded-sm hover:bg-gray-200/50 hover:cursor-pointer"
             >
               Images & Video
             </button>
@@ -100,17 +100,18 @@ export default function SubmitPage() {
               onClick={async () => {
                 handleTypeChange(PostType.Link);
               }}
-              className="submit-type"
+              className="w-full pb-1 pt-1 block rounded-sm hover:bg-gray-200/50 hover:cursor-pointer"
             >
               Link
             </button>
           </div>
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col justify-center"
+            className="flex flex-col justify-center max-w-2xl"
           >
-            <div className="submit-body-group bg-white">
+            <div className="pt-2 relative w-full">
               <input
+                className="peer border border-gray-200 rounded-lg p-2 w-full "
                 type="text"
                 value={postTitle}
                 required
@@ -118,16 +119,24 @@ export default function SubmitPage() {
                   setPostTitle(e.target.value);
                 }}
               />
-              <label className="text-sm">Title</label>
+              <label
+                className="
+                peer-focus:top-0
+                peer-focus:text-[11px]
+
+                peer-valid:top-0
+                peer-valid:text-[11px] after:content-['*'] after:text-red-500 after:text-sm after:ml-2 absolute left-3 top-[60%] translate-y-[-60%] bg-transparent py-1.5 text-[#888] pointer-events-none duration-200 ease-in-out text-sm"
+              >
+                Title
+              </label>
             </div>
-            <div className="submit-body-group">
+            <div className="flex flex-col mt-4">
               {type === PostType.Text && (
                 <textarea
-                  className=" placeholder:text-sm "
+                  className="peer resize-none rounded-lg w-full p-3 border-gray-200 border placeholder:text-sm "
                   name="body-text"
                   placeholder="Body Text"
                   id="body-text"
-                  cols={60}
                   rows={10}
                   value={textBody}
                   onChange={(e) => {
@@ -135,10 +144,11 @@ export default function SubmitPage() {
                   }}
                 ></textarea>
               )}
+
               {type === PostType.Image && (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative flex flex-col justify-content items-center sm:w-160 py-25 border-dashed border-gray-200 border-2 rounded-lg hover:cursor-pointer"
+                  className="relative flex flex-col justify-center items-center sm:w-full min-h-64 border-dashed border-gray-200 border-2 rounded-lg hover:cursor-pointer"
                 >
                   <span className="py-2">Drag and drop or upload media</span>
                   <MdOutlineFileUpload size={35} />
@@ -152,8 +162,9 @@ export default function SubmitPage() {
                 </div>
               )}
               {type === PostType.Link && (
-                <div className="submit-body-group bg-white">
+                <div className="pt-2 relative w-full">
                   <input
+                    className="peer border border-gray-200 rounded-lg p-2 w-full "
                     type="text"
                     value={linkUrl}
                     required
@@ -161,7 +172,15 @@ export default function SubmitPage() {
                       setLinkUrl(e.target.value);
                     }}
                   />
-                  <label className="text-sm">Link URL</label>
+                  <label
+                    className="peer-focus:top-0
+                peer-focus:text-[11px]
+
+                peer-valid:top-0
+                peer-valid:text-[11px] after:content-['*'] after:text-red-500 after:text-sm after:ml-2 absolute left-3 top-[60%] translate-y-[-60%] bg-transparent py-1.5 text-[#888] pointer-events-none duration-200 ease-in-out text-sm"
+                  >
+                    Link URL
+                  </label>
                 </div>
               )}
             </div>
