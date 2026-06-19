@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import RootLayout from "@/components/Layouts/RootLayout";
-import HomePage from "@/pages/HomePage";
-import ErrorPage from "@/pages/ErrorPage";
-import SubmitPage from "@/pages/SubmitPage";
-import PopularPage from "@/pages/PopularPage";
+import HomePage from "@/pages/HomeFeed";
+import ErrorPage from "@/pages/NotFound";
+import SubmitPage from "@/pages/Submit";
+import PopularPage from "@/pages/Popular";
 
 function App() {
   return (

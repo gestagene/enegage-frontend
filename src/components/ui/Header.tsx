@@ -3,6 +3,7 @@ import { IoCreateOutline } from "react-icons/io5";
 import { RiNotification2Line } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
 import { RxHamburgerMenu } from "react-icons/rx";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   query: string;
@@ -19,9 +20,10 @@ export default function Header({
   onLoginClick,
   handleProfileMenu,
 }: HeaderProps) {
+  const navigate = useNavigate();
   return (
     <>
-      <header className="border-b border-gray-200 sticky text-sm">
+      <header className="border-b border-gray-200 sticky top-0 text-sm">
         <div className="flex justify-between items-center mx-5 my-2">
           <div className="md:hidden mr-5">
             <RxHamburgerMenu />
@@ -31,7 +33,7 @@ export default function Header({
               enegage
             </h1>
           </div>
-          <form action="" className="w-1/2 md:w-1/3">
+          <form action="" className="w-1/2 md:w-1/3 max-w-150">
             <label className="w-full items-center border rounded-gradient-border rounded-full p-2 flex">
               <CiSearch size={20} />
               <input
@@ -53,6 +55,7 @@ export default function Header({
             ) : (
               <div className="flex justify-between space-x-2 items-center">
                 <button
+                  onClick={() => navigate("/submit")}
                   type="button"
                   className="hover:bg-gray-200 hover:cursor-pointer scale-100 text-[0.80rem] font-semibold flex p-1.5 rounded-full justify-center items-center"
                 >

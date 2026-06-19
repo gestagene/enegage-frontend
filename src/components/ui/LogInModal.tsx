@@ -1,4 +1,3 @@
-import "@/pages/login.css";
 import { useRef } from "react";
 import { MdClose } from "react-icons/md";
 import { GoogleLogin } from "@react-oauth/google";
@@ -31,20 +30,29 @@ export default function LogInModal({ onClose, onSuccess }: LogInModalProps) {
 
   return (
     <>
+      <style>{`
+        .input-group input:focus + label,
+        .input-group input:valid + label {
+          bottom: -15px;
+          font-size: 9px;
+        }
+      `}</style>
+
       <div
-        className="fixed inset-0 flex items-center justify-center bg-black/50 min-h-screen "
+        className="fixed inset-0 flex items-center justify-center bg-black/50 min-h-screen z-1"
         ref={overlayRef}
         onClick={(e) => {
           if (e.target === overlayRef.current) onClose();
         }}
       >
-        <div className="relative flex flex-col space-y-1 shadow-2xl rounded-lg w-full max-w-md p-6 bg-white px-10 min-h-auto sm:min-h-auto ">
+        <div className="relative flex flex-col space-y-1 shadow-2xl rounded-lg w-full max-w-md p-6 bg-white px-10 min-h-auto sm:min-h-auto">
           <button
             onClick={onClose}
             className="absolute top-0.75 right-0.75 p-2 bg-gray-200 rounded-full mr-2 mt-2 hover:brightness-75 hover:cursor-pointer"
           >
             <MdClose />
           </button>
+
           <div className="justify-center items-center text-center flex flex-col space-y-3">
             <h1 className="font-bold text-2xl">
               {!showSignUp ? "Log In" : "Sign Up"}
@@ -59,36 +67,43 @@ export default function LogInModal({ onClose, onSuccess }: LogInModalProps) {
                 console.log("Login Failed");
               }}
             />
-
             <div className="flex items-center gap-3 w-full py-4">
               <hr className="flex-1 border-gray-200" />
               <span className="text-sm text-gray-400">OR</span>
               <hr className="flex-1 border-gray-200" />
             </div>
           </div>
+
           {!showSignUp ? (
-            <div className="login-container sm:min-h-75">
+            <div className="sm:min-h-75">
               <form
                 onSubmit={handleLogin}
                 className="flex flex-col space-y-6 justify-center items-center py-4"
               >
-                <div className="input-group">
+                <div className="input-group relative w-full">
                   <input
                     type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 py-3.5 rounded-xl outline-none text-base bg-[#eeeeee]"
                   />
-                  <label className="text-sm">Email</label>
+                  <label className="absolute left-3 top-1/2 -translate-y-1/2 px-1.5 text-[#888] text-sm pointer-events-none transition-all duration-100">
+                    Email
+                  </label>
                 </div>
-                <div className="input-group">
+
+                <div className="input-group relative w-full">
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-3.5 rounded-xl outline-none text-base bg-[#eeeeee]"
                   />
-                  <label className="text-sm">Password</label>
+                  <label className="absolute left-3 top-1/2 -translate-y-1/2 px-1.5 text-[#888] text-sm pointer-events-none transition-all duration-100">
+                    Password
+                  </label>
                 </div>
 
                 <input
@@ -101,15 +116,13 @@ export default function LogInModal({ onClose, onSuccess }: LogInModalProps) {
               </form>
 
               <div className="flex flex-col text-xs space-y-4">
-                <a href="" className="text-[#0000EE] hover:text-[#551A8B] ">
+                <a href="" className="text-[#0000EE] hover:text-[#551A8B]">
                   Forgot password?
                 </a>
                 <span>
                   New to enegage?{" "}
                   <button
-                    onClick={() => {
-                      switchToSignUp();
-                    }}
+                    onClick={switchToSignUp}
                     className="text-[#0000EE] hover:text-[#551A8B] text-xs"
                   >
                     Sign up
@@ -118,21 +131,25 @@ export default function LogInModal({ onClose, onSuccess }: LogInModalProps) {
               </div>
             </div>
           ) : (
-            <div className="signup-container sm:min-h-75">
+            <div className="sm:min-h-75">
               <form
                 onSubmit={handleSignup}
                 className="flex flex-col space-y-3 justify-center items-center py-4"
               >
-                <div className="input-group">
+                <div className="input-group relative w-full">
                   <input
                     type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 py-3.5 rounded-xl outline-none text-base bg-[#eeeeee]"
                   />
-                  <label className="text-sm">Email</label>
+                  <label className="absolute left-3 top-1/2 -translate-y-1/2 px-1.5 text-[#888] text-sm pointer-events-none transition-all duration-100">
+                    Email
+                  </label>
                 </div>
-                <div className="input-group">
+
+                <div className="input-group relative w-full">
                   <input
                     type="text"
                     maxLength={20}
@@ -145,18 +162,26 @@ export default function LogInModal({ onClose, onSuccess }: LogInModalProps) {
                         .replace(/^_/, "");
                       setUsername(cleaned);
                     }}
+                    className="w-full px-3 py-3.5 rounded-xl outline-none text-base bg-[#eeeeee]"
                   />
-                  <label className="text-sm">User Name</label>
+                  <label className="absolute left-3 top-1/2 -translate-y-1/2 px-1.5 text-[#888] text-sm pointer-events-none transition-all duration-100">
+                    User Name
+                  </label>
                 </div>
-                <div className="input-group">
+
+                <div className="input-group relative w-full">
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-3.5 rounded-xl outline-none text-base bg-[#eeeeee]"
                   />
-                  <label className="text-sm">Password</label>
+                  <label className="absolute left-3 top-1/2 -translate-y-1/2 px-1.5 text-[#888] text-sm pointer-events-none transition-all duration-100">
+                    Password
+                  </label>
                 </div>
+
                 <input
                   type="submit"
                   disabled={!email || !password || !username}
@@ -168,12 +193,11 @@ export default function LogInModal({ onClose, onSuccess }: LogInModalProps) {
                 )}
                 {error && <p className="text-red-500 text-sm">{error}</p>}
               </form>
+
               <span className="text-xs">
                 Already a user?{" "}
                 <button
-                  onClick={() => {
-                    switchToLogin();
-                  }}
+                  onClick={switchToLogin}
                   className="text-[#0000EE] hover:text-[#551A8B] text-xs"
                 >
                   Log In

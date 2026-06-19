@@ -8,7 +8,6 @@ export function useFetch<T>(fn: () => Promise<T>, deps: DependencyList = []) {
   useEffect(() => {
     async function fetchData() {
       try {
-        console.log("test");
         const result = await fn();
         setData(result);
         console.log(result);

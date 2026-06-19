@@ -1,6 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap");
 @import "tailwindcss";
 
+@theme {
+  --animate-pulse: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 body {
   font-family: "Inter";
   letter-spacing: 1px;
@@ -25,7 +29,8 @@ button:hover {
 }
 .rounded-gradient-border {
   border: 1px solid transparent;
-  background-image: linear-gradient(white, white),
+  background-image:
+    linear-gradient(white, white),
     linear-gradient(to right, rgba(42, 166, 28, 0.839), rgb(111, 184, 1));
   box-shadow: 0 0 8px 1px rgba(175, 188, 0, 0.125);
   background-origin: border-box;

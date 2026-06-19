@@ -1,7 +1,7 @@
 export default function FeedSkeleton() {
   return (
     <>
-      <div className="relative sm:mx-6 sm: my-2">
+      <div className="relative sm: my-2">
         <div className="relative sm:w-175 text-justify px-2 pb-2 bg-gray-100 rounded-lg">
           <div className="animate-pulse flex items-center space-x-3 px-2 pt-2 w-full">
             <span className="rounded-4xl w-8 h-8 bg-gray-200/75"></span>

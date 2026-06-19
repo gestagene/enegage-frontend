@@ -1,13 +1,15 @@
-import Header from "../Header";
-import Sidebar from "../Sidebar";
-import RecentTab from "../RecentTab";
-import LogInModal from "@/components/LogInModal";
+import Header from "../ui/Header";
+import Sidebar from "../ui/Sidebar";
+import RightSideBar from "../ui/RightSideBar";
+import LogInModal from "@/components/ui/LogInModal";
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import supabase from "@/services/supabaseClient";
-import ProfileMenu from "@/components/ProfileMenu";
+import ProfileMenu from "@/components/ui/ProfileMenu";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useNavigate, useLocation } from "react-router-dom";
+import FeedSkeleton from "@/components/ui/FeedSkeleton";
+import SortControls from "@/components/ui/SortControls";
 
 export default function RootLayout() {
   const [query, setQuery] = useState("");
@@ -103,21 +105,27 @@ export default function RootLayout() {
           }}
         />
       )}
-      <div className="main-content-area">
+      <div className="flex">
         <Sidebar
           isCollapsed={!showNav}
           onCollapse={() => setShowNav(!showNav)}
         />
+        <main className="flex flex-1 min-h-screen">
+          <div className="flex flex-1 justify-center pt-4 px-4">
+            <div className="flex w-full max-w-4xl gap-10">
+              {/* Feed */}
+              <div className="flex-1 min-w-0">
+                <Outlet context={{ query }} />
+              </div>
 
-        <main className="flex flex-1 p-4 w-full justify-center">
-          {forceLogin && !isLoggedIn ? (
-            <div />
-          ) : (
-            <div className="flex flex-1 justify-center ">
-              <Outlet context={{ query }} />
-              {!hideRecentTab.includes(location.pathname) && <RecentTab />}
+              {/* Right Sidebar */}
+              {!hideRecentTab.includes(location.pathname) && (
+                <div className="hidden lg:flex w-75 shrink-0 sticky top-16 self-start">
+                  <RightSideBar />
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </main>
       </div>
     </div>

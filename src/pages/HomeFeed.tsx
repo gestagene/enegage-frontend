@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
-import PostCard from "@/components/PostCard";
+import PostCard from "@/components/ui/PostCard";
 import type { Post } from "@/types/post.ts";
 import { getPosts } from "@/services/posts";
 import { useFetch } from "@/hooks/useFetch";
@@ -13,7 +13,7 @@ export default function Home() {
   const posts = data ?? [];
 
   const filtered = posts.filter((post) =>
-    post.title.toLowerCase().includes(query.toLowerCase())
+    post.title.toLowerCase().includes(query.toLowerCase()),
   );
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function Home() {
   }
   if (error) {
     return (
-      <div>
+      <div className="justify-center items-center ">
         <p className="text-red-500 text-md text-center w-full">{error}</p>
       </div>
     );
@@ -49,7 +49,7 @@ export default function Home() {
     );
   return (
     <>
-      <div className="flex flex-col divide-y divide-gray-200 space-y-1">
+      <div className="flex flex-col divide-y divide-gray-200 space-y-1 justify-center">
         {filtered.slice(0, displayLimit).map((post) => (
           <PostCard key={post.id} post={post} />
         ))}

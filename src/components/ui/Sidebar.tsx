@@ -11,12 +11,12 @@ export default function Sidebar({ onCollapse, isCollapsed }: SidebarProps) {
   return (
     <>
       <aside
-        className={`relative font-light h-screen hidden md:flex shrink border-r border-gray-200  bg-white transition-all duration-100 ${
-          isCollapsed ? "w-15 px-3" : "w-90 px-3"
+        className={`sticky self-start font-light h-screen hidden xl:flex shrink border-r border-gray-200  bg-white transition-all duration-100 ${
+          isCollapsed ? "w-10 pl-3" : "w-65 pl-3"
         }`}
       >
         {!isCollapsed && (
-          <nav className="mt-5 w-full">
+          <nav className="mt-5 w-full text-sm">
             <ul className="">
               <li className="sidebar-element flex space-x-2">
                 <NavLink to="/" className="flex space-x-2 w-full h-full">
@@ -41,7 +41,7 @@ export default function Sidebar({ onCollapse, isCollapsed }: SidebarProps) {
       <button
         title={isCollapsed ? "Expand Navigation" : "Collapse Navigation"}
         onClick={onCollapse}
-        className="hover:cursor-pointer -left-4 top-20 relative max-w-10 max-h-8 hidden md:flex bg-white border-gray-200 rounded-full border py-1 px-1.5 justify-center items-center shadow-2xl "
+        className="hover:cursor-pointer -left-4 top-20 relative max-w-10 max-h-8 hidden xl:flex bg-white border-gray-200 rounded-full border py-1 px-1.5 justify-center items-center shadow-2xl "
       >
         <RxHamburgerMenu size={20} />
       </button>
