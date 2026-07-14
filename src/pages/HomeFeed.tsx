@@ -4,11 +4,11 @@ import PostCard from "@/components/ui/PostCard";
 import type { Post } from "@/types/post.ts";
 import { getPosts } from "@/services/posts";
 import { useFetch } from "@/hooks/useFetch";
+import FeedSkeleton from "@/components/ui/FeedSkeleton";
 
 export default function Home() {
   const { query } = useOutletContext<{ query: string }>();
   const [displayLimit, setDisplayLimit] = useState(10);
-
   const { data, isLoading, error } = useFetch<Post[]>(getPosts, []);
   const posts = data ?? [];
 
@@ -31,7 +31,9 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="text-center text-md text-gray-600 w-full">Loading...</div>
+      <div className="flex items-center justify-center w-full flex-col">
+        <FeedSkeleton />
+      </div>
     );
   }
   if (error) {
@@ -43,17 +45,15 @@ export default function Home() {
   }
   if (!posts || posts.length === 0)
     return (
-      <p className="text-center text-md text-gray-600 w-full">
+      <p className="text-center text-md text-gray-600 sm:w-175 w-full">
         No posts found..
       </p>
     );
   return (
-    <>
-      <div className="flex flex-col divide-y divide-gray-200 space-y-1 justify-center">
-        {filtered.slice(0, displayLimit).map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
-      </div>
-    </>
+    <div className="flex-col flex justify-center items-center divide-y divide-gray-300">
+      {filtered.slice(0, displayLimit).map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+    </div>
   );
 }
