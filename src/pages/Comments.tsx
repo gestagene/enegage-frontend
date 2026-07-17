@@ -4,16 +4,14 @@ import type { Post } from "@/types/post";
 import { useState, useEffect } from "react";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { IoChatbubbleOutline } from "react-icons/io5";
-import { AiOutlineLike } from "react-icons/ai";
-import { BsRepeat } from "react-icons/bs";
-import { RiShareForwardFill } from "react-icons/ri";
+import ActionBar from "@/components/ui/ActionBar";
+import CommentBox from "@/components/ui/CommentBox";
 
 export default function Comments() {
   const { id } = useParams();
   const [post, setPost] = useState<Post | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [_error, setError] = useState("");
   const navigate = useNavigate();
   const imageUrl = post?.media?.[0]?.media_url;
 
@@ -21,7 +19,6 @@ export default function Comments() {
     if (!id) return;
     async function fetchPost() {
       try {
-        setIsLoading(true);
         setError("");
         const result = await getPost(id!);
         setPost(result);
@@ -37,7 +34,7 @@ export default function Comments() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-4 border-gray-300 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -51,13 +48,14 @@ export default function Comments() {
         >
           <IoArrowBackSharp size={20} />
         </button>
-        <span>{post?.users.username ?? ""}</span>
-        <span>{post?.users.institute ?? ""}</span>
+        <span>{post?.users?.username ?? ""}</span>
+        <span>{post?.users?.institute ?? ""}</span>
         <span>{new Date(post?.created_at ?? "").toLocaleDateString()}</span>
       </div>
-      <h1 className="text-[1.4rem] font-bold">{post?.title ?? ""}</h1>
+
       {/*Post Body */}
       <div className="mb-4">
+        <h1 className="text-[1.4rem] font-bold">{post?.title ?? ""}</h1>
         {imageUrl && (
           <div className="relative w-full h-128 rounded-lg overflow-hidden my-1">
             <img
@@ -74,31 +72,9 @@ export default function Comments() {
         )}
         {post?.body || post?.link_url}
       </div>
-
-      <div className="flex space-x-3 items-center">
-        <button className="flex space-x-1  justify-center items-center py-1 px-1 bg-gray-200 rounded-full w-15 text-xs ">
-          <span>
-            <AiOutlineLike size={20} />
-          </span>
-          <span>{post?.total_likes}</span>
-        </button>
-        <button className="flex space-x-1  justify-center items-center py-1.5 px-1.5 bg-gray-200 rounded-full text-black text-xs">
-          <span>
-            <IoChatbubbleOutline size={20} />
-          </span>
-        </button>
-        <button className="flex space-x-1  justify-center items-center py-1.5 px-1.5 bg-gray-200 rounded-full ">
-          <span>
-            <BsRepeat size={21} />
-          </span>
-        </button>
-        <button className="flex space-x-1  justify-center items-center py-1.5 px-1.5 bg-gray-200 rounded-full">
-          <span>
-            <RiShareForwardFill size={20} />
-          </span>
-          <span className="text-xs">Share</span>
-        </button>
-      </div>
+      <ActionBar likes={post?.total_likes} />
+      {/*Comment Box*/}
+      <CommentBox />
     </div>
   );
 }
