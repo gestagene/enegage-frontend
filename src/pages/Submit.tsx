@@ -1,83 +1,28 @@
-import { useState, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { MdOutlineFileUpload } from "react-icons/md";
-import { createPost, createImagePost } from "@/services/posts";
-import supabase from "@/services/supabaseClient";
-
-const PostType = {
-  Text: "text",
-  Image: "image",
-  Link: "link",
-} as const;
-
-type PostType = (typeof PostType)[keyof typeof PostType];
+import { useSubmitPost, PostType } from "@/hooks/useSubmitPost";
 
 export default function SubmitPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [postTitle, setPostTitle] = useState("");
-  const [textBody, setTextBody] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const type = (searchParams.get("type") as PostType) ?? PostType.Text;
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  function handleTypeChange(newType: PostType) {
-    setSearchParams({ type: newType });
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setIsSubmitting(true);
-
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        throw new Error("You must be logged in to post");
-      }
-      if (type === PostType.Image) {
-        if (!imageFile) {
-          throw new Error("Please select an image");
-        }
-        const { post } = await createImagePost(
-          postTitle,
-          type,
-          session.user.id,
-          imageFile,
-        );
-        navigate(`/posts/${post.id}`);
-      } else {
-        const body = type === PostType.Text ? textBody : linkUrl;
-        const { post } = await createPost(
-          postTitle,
-          body,
-          type,
-          session.user.id,
-        );
-        navigate(`/posts/${post.id}`);
-      }
-      setPostTitle("");
-      setTextBody("");
-      setLinkUrl("");
-      setImageFile(null);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
+  const {
+    type,
+    postTitle,
+    setPostTitle,
+    textBody,
+    setTextBody,
+    imageFile,
+    setImageFile,
+    linkUrl,
+    setLinkUrl,
+    error,
+    isSubmitting,
+    isDisabled,
+    fileInputRef,
+    handleTypeChange,
+    handleSubmit,
+  } = useSubmitPost();
   return (
     <div>
-      <div className="max-w-3xl w-full shrink-0 flex flex-col justify-center items-center   px-12 py-9">
-        <div className="w-full relative">
+      <div className="max-w-3xl w-full flex flex-col justify-center items-center px-12 py-9">
+        <div className="w-full">
           <h1 className="font-bold text-2xl py-3">Create a post</h1>
           <div className="relative flex w-full text-sm">
             <button
@@ -185,17 +130,18 @@ export default function SubmitPage() {
               )}
             </div>
             <div className="flex py-5 relative justify-center">
-              <input
-                type="submit"
-                value="Submit"
-                disabled={
-                  !postTitle ||
-                  (type === PostType.Text && !textBody) ||
-                  (type === PostType.Image && !imageFile) ||
-                  (type === PostType.Link && !linkUrl)
-                }
-                className="bg-green-900 text-white py-2 px-4 rounded-full hover:cursor-pointer hover:brightness-85 w-25 text-center disabled:opacity-75 duration-200"
-              />
+              {!isSubmitting ? (
+                <input
+                  type="submit"
+                  value="Submit"
+                  disabled={isDisabled}
+                  className="bg-green-900 text-white py-2 px-4 rounded-full hover:cursor-pointer hover:brightness-85 w-25 text-center disabled:opacity-75 duration-200"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-10 opacity-75 rounded-full pointer-events-none w-25 py-2 px-4">
+                  <div className="w-8 h-8 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
             </div>
           </form>
         </div>
