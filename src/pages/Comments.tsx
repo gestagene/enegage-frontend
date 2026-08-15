@@ -11,8 +11,10 @@ import { useFetch } from "@/hooks/useFetch";
 import { getComments } from "@/services/comments";
 import type { Comment } from "@/types/comment";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
+import { votePost } from "@/services/votes";
 export default function Comments() {
   const { id } = useParams();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   if (!id) {
     return <Navigate to="/" replace />;
@@ -20,13 +22,22 @@ export default function Comments() {
 
   return (
     <>
-      <CommentsLoader id={id} />
-      <CommentSection postId={id} />
+      <CommentsLoader
+        id={id}
+        onCommentPosted={() => setRefreshKey((k) => k + 1)}
+      />
+      <CommentSection postId={id} refreshKey={refreshKey} />
     </>
   );
 }
 
-function CommentsLoader({ id }: { id: string }) {
+function CommentsLoader({
+  id,
+  onCommentPosted,
+}: {
+  id: string;
+  onCommentPosted: () => void;
+}) {
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -60,14 +71,20 @@ function CommentsLoader({ id }: { id: string }) {
     );
   }
 
-  return <CommentsContent post={post} />;
+  return <CommentsContent post={post} onCommentPosted={onCommentPosted} />;
 }
 
-function CommentsContent({ post }: { post: Post }) {
+function CommentsContent({
+  post,
+  onCommentPosted,
+}: {
+  post: Post;
+  onCommentPosted: () => void;
+}) {
   const navigate = useNavigate();
   const imageUrl = post.media?.[0]?.media_url;
   const { vote, voteScore, handleVote } = useVote(
-    post.id,
+    (vote) => votePost(post.id, vote),
     post.user_vote,
     post.vote_score,
   );
@@ -84,9 +101,6 @@ function CommentsContent({ post }: { post: Post }) {
         <span className="mx-1"></span>
         <span className="after:content-['·'] after:mx-1">
           {post.users?.username ?? "Deleted User"}
-        </span>
-        <span className="after:content-['·'] after:mx-1">
-          {post.users?.institute ?? "Student"}
         </span>
         <span>{formatRelativeTime(post.created_at)}</span>
       </div>
@@ -109,16 +123,27 @@ function CommentsContent({ post }: { post: Post }) {
         )}
         {post.body || post.link_url}
       </div>
-      <ActionBar voteScore={voteScore} vote={vote} handleVote={handleVote} />
-      <CommentBox postId={post.id} />
+      <ActionBar
+        variant="post"
+        voteScore={voteScore}
+        vote={vote}
+        handleVote={handleVote}
+      />
+      <CommentBox postId={post.id} onCommentPosted={onCommentPosted} />
     </div>
   );
 }
 
-function CommentSection({ postId }: { postId: string }) {
+function CommentSection({
+  postId,
+  refreshKey,
+}: {
+  postId: string;
+  refreshKey: number;
+}) {
   const { data, isLoading, error } = useFetch<Comment[]>(
     () => getComments(postId),
-    [postId],
+    [postId, refreshKey],
   );
   const comments = data ?? [];
 
