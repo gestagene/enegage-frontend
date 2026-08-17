@@ -1,15 +1,23 @@
+interface Media {
+  media_url: string;
+  media_type: string;
+  uploaded_at: string;
+}
 export interface Post {
-  id: number;
+  id: string;
   title: string;
   body: string | null;
   post_type: "text" | "image" | "link";
-  image_url: string;
   link_url: string;
-  total_likes: string;
+  vote_score: number;
   created_at: string;
-  user_id: string;
-  profiles: {
+  users: {
     username: string;
     institute: string | null;
   };
+  media: Media[];
+  user_vote: vote | null;
+  comment_count?: number;
 }
+
+export type vote = "up" | "down";

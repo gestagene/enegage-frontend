@@ -8,10 +8,11 @@ import { PiArrowFatDownFill } from "react-icons/pi";
 import { BsThreeDots } from "react-icons/bs";
 import type { vote } from "@/types/post";
 type ActionBarProps = {
-  voteScore?: number;
-  vote?: vote | null;
-  handleVote?: (v: vote) => void;
+  voteScore: number;
+  vote: vote | null;
+  handleVote: (v: vote) => void;
   variant: "post" | "comment";
+  commentCount?: number;
 };
 
 export default function ActionBar({
@@ -19,6 +20,7 @@ export default function ActionBar({
   vote,
   handleVote,
   variant,
+  commentCount,
 }: ActionBarProps) {
   return (
     <div className="flex space-x-2 items-center">
@@ -38,7 +40,7 @@ export default function ActionBar({
             e.stopPropagation();
             handleVote?.("up");
           }}
-          className={`${variant === "post" ? (vote === "up" ? "hover:bg-green-900" : vote === "down" ? "hover:bg-blue-900" : "hover:bg-gray-300") : "hover:bg-gray-300"} rounded-full py-1 px-2`}
+          className={`${variant === "post" ? (vote === "up" ? "hover:bg-green-900" : vote === "down" ? "hover:bg-blue-900" : "hover:bg-gray-300") : "hover:bg-gray-300"} rounded-full py-1 px-1.5`}
         >
           {vote === "up" ? (
             <PiArrowFatUpFill
@@ -49,13 +51,15 @@ export default function ActionBar({
             <PiArrowFatUpLight size={20} />
           )}
         </button>
-        <span className="text-xs">{voteScore}</span>
+        <span className={`text-xs w-3 shrink-0 grow-0 text-center`}>
+          {voteScore}
+        </span>
         <button
           onClick={(e) => {
             e.stopPropagation();
             handleVote?.("down");
           }}
-          className={`${vote === "up" ? "hover:bg-green-900" : vote === "down" ? "hover:bg-blue-900" : "hover:bg-gray-300"} rounded-full py-1 px-2`}
+          className={`${variant === "post" ? (vote === "up" ? "hover:bg-green-900" : vote === "down" ? "hover:bg-blue-900" : "hover:bg-gray-300") : "hover:bg-gray-200"} rounded-full py-1 px-1.5`}
         >
           {vote === "down" ? (
             <PiArrowFatDownFill
@@ -69,10 +73,11 @@ export default function ActionBar({
       </div>
 
       <button
-        className={`flex space-x-1  justify-center hover:bg-gray-300 hover:cursor-pointer items-center py-1 px-1 rounded-full w-8 text-xs text-black ${variant === "post" ? "bg-gray-200/75" : "bg-transparent"}`}
+        className={`flex space-x-1 w-auto justify-center hover:bg-gray-300 hover:cursor-pointer items-center py-1.5 px-1.5 rounded-full text-xs text-black ${variant === "post" ? "bg-gray-200/75" : "bg-transparent"}`}
       >
-        <span>
+        <span className="flex items-center space-x-1 px-1.5">
           <PiChatCircleLight size={20} />
+          <span>{commentCount}</span>
         </span>
       </button>
       <button
@@ -90,15 +95,10 @@ export default function ActionBar({
         </span>
       </button>
       <button
-        onClick={() => <DeleteMenu />}
         className={`hover:bg-gray-300 rounded-full py-1.5 px-1.5 ${variant === "comment" ? "flex" : "hidden"}`}
       >
         <BsThreeDots size={15} />
       </button>
     </div>
   );
-}
-
-function DeleteMenu() {
-  return <div className="absolute bg-red-400 w-100 h-100"></div>;
 }
