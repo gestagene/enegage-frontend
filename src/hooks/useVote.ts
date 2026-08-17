@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import type { vote } from "@/types/post";
-import { votePost } from "@/services/votes";
 
 function voteWeight(v: vote | null): number {
   if (v === "up") return 1;
@@ -8,8 +7,10 @@ function voteWeight(v: vote | null): number {
   return 0;
 }
 
+type VoteFunction = (vote: vote | null) => Promise<unknown>;
+
 export function useVote(
-  postId: string,
+  voteFn: VoteFunction,
   initialVote: vote | null = null,
   initialScore: number = 0,
 ) {
@@ -39,7 +40,7 @@ export function useVote(
     }
 
     timeoutRef.current = setTimeout(() => {
-      votePost(postId, newVote).catch(() => {
+      voteFn(nextVote).catch(() => {
         // request failed — roll back both the icon state and the count
         setVote(prevVote);
         setVoteScore((score) => score - delta);
