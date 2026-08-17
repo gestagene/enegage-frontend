@@ -1,8 +1,8 @@
 import { createComment } from "@/services/comments";
 import { useAuth } from "@/context/authContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-export function useSubmitComment(postId: string) {
+export function useSubmitComment(postId: string, onSuccess?: () => void) {
   const { isLoggedIn } = useAuth();
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,6 +22,7 @@ export function useSubmitComment(postId: string) {
         throw new Error("Comment content can't be empty");
       }
       await createComment(postId, comment);
+      onSuccess?.();
       setComment("");
     } catch (err: any) {
       setError(err.message);

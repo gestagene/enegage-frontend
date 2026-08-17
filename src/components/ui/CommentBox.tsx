@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { useSubmitComment } from "@/hooks/useSubmitComment";
 
-export default function CommentBox({ postId }: { postId: string }) {
+export default function CommentBox({
+  postId,
+  onCommentPosted,
+}: {
+  postId: string;
+  onCommentPosted: () => void;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { comment, setComment, isSubmitting, error, isDisabled, handleSubmit } =
-    useSubmitComment(postId);
+    useSubmitComment(postId, onCommentPosted);
 
   const handleResize = (e: React.FormEvent<HTMLTextAreaElement>) => {
     e.currentTarget.style.height = "0px";
