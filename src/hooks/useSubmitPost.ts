@@ -30,6 +30,7 @@ export function useSubmitPost() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (isSubmitting) return;
     setError("");
     setIsSubmitting(true);
 
@@ -44,7 +45,7 @@ export function useSubmitPost() {
         const { post } = await createImagePost(postTitle, type, imageFile);
         navigate(`/comments/${post.id}`);
       } else {
-        const body = type === PostType.Text ? textBody : linkUrl;
+        const body = type === PostType.Text ? textBody : normalizeUrl(linkUrl);
         const { post } = await createPost(postTitle, body, type);
         navigate(`/comments/${post.id}`);
       }
@@ -60,7 +61,7 @@ export function useSubmitPost() {
   }
 
   const isDisabled =
-    !postTitle ||
+    !postTitle.trim() ||
     (type === PostType.Text && !textBody) ||
     (type === PostType.Image && !imageFile) ||
     (type === PostType.Link && !linkUrl);
@@ -82,4 +83,23 @@ export function useSubmitPost() {
     handleTypeChange,
     handleSubmit,
   };
+}
+
+function normalizeUrl(val: string) {
+  const input = val.trim();
+
+  if (!input) {
+    throw new Error("URL is required");
+  }
+  const url = new URL(/^https?:\/\//i.test(input) ? input : `https://${input}`);
+
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    throw new Error("Invalid URL protocol");
+  }
+
+  if (!url.hostname.includes(".")) {
+    throw new Error("URL must contain a valid domain");
+  }
+
+  return url.href;
 }
