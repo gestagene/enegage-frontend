@@ -75,7 +75,7 @@ export default function Home() {
                 await deletePost(post.id);
                 setPosts((prev) => prev.filter((p) => p.id !== post.id));
               } catch (error: any) {
-                throw new Error(error.message);
+                console.error("Failed to delete post:", error);
               }
             }}
           />
