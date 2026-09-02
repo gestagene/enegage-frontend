@@ -1,14 +1,23 @@
+import { supabase } from "@/lib/supabaseClient";
+
 export async function createPost(
   title: string,
   body: string,
   post_type: string,
-  user_id: string
 ) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, body, post_type, user_id }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session?.access_token}`,
+    },
+    body: JSON.stringify({ title, body, post_type }),
   });
+
   const data = await response.json();
 
   if (!response.ok) {
@@ -21,17 +30,21 @@ export async function createPost(
 export async function createImagePost(
   title: string,
   post_type: string,
-  user_id: string,
-  imageFile: File
+  imageFile: File,
 ) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   const formData = new FormData();
   formData.append("title", title);
   formData.append("post_type", post_type);
-  formData.append("user_id", user_id);
   formData.append("image", imageFile);
 
   const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${session?.access_token}`,
+    },
     body: formData,
   });
 
@@ -43,15 +56,50 @@ export async function createImagePost(
   return data;
 }
 
-export async function getPosts() {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`);
-
-  const { posts } = await response.json();
-  console.log({ posts });
+export async function getPosts(sort: "new" | "top" = "new") {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/posts?sort=${sort}`,
+  );
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(posts.message);
+    throw new Error(data.message);
   }
 
-  return posts;
+  return data; // backend returns a bare array
+}
+
+export async function getPost(id: string) {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/posts/${id}`,
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data.post;
+}
+
+export async function deletePost(id: string) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/posts/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    },
+  );
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data.message;
 }
