@@ -18,6 +18,9 @@ export default function SubmitPage() {
     fileInputRef,
     handleTypeChange,
     handleSubmit,
+    isDragging,
+    setIsDragging,
+    previewUrl,
   } = useSubmitPost();
   return (
     <div>
@@ -92,11 +95,45 @@ export default function SubmitPage() {
 
               {type === PostType.Image && (
                 <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                  }}
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative flex flex-col justify-center items-center sm:w-full min-h-64 border-dashed border-gray-200 border-2 rounded-lg hover:cursor-pointer"
+                  className={`relative flex flex-col justify-center items-center sm:w-full min-h-64 border rounded-lg hover:cursor-pointer  ${isDragging ? "border-blue-500 text-blue-500 font-bold filter drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] " : "border-gray-200"}`}
                 >
-                  <span className="py-2">Drag and drop or upload media</span>
-                  <MdOutlineFileUpload size={35} />
+                  {previewUrl ? (
+                    <div className="relative w-full h-64 rounded-lg overflow-hidden">
+                      <img
+                        src={previewUrl}
+                        aria-hidden
+                        className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-75"
+                      />
+                      <img
+                        src={previewUrl}
+                        alt={"preview img"}
+                        className="relative w-full h-full object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <span className={`py-2`}>
+                        {isDragging
+                          ? "Drop your file here"
+                          : "Drag and drop a file, or click to upload"}
+                      </span>
+                      <MdOutlineFileUpload size={35} />
+                    </>
+                  )}
+
                   <input
                     ref={fileInputRef}
                     type="file"
