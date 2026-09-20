@@ -1,20 +1,17 @@
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import { RichTextEditor, Link } from "@/components/editor";
 import { ImageIcon } from "lucide-react";
 import { useMemo, useRef } from "react";
 import SubmitImageOverlay from "@/components/ui/SubmitImageOverlay";
-import { useCreatePost } from "@/hooks/useSubmitPost";
+import { useSubmitPost } from "@/hooks/useSubmitPost";
 import "@/components/editor/style.css";
 
 export default function Submit() {
   const extensions = useMemo(
     () => [
       StarterKit.configure({ heading: { levels: [1, 2, 3, 4, 5, 6] } }),
-      Link,
-      Underline,
       Placeholder.configure({ placeholder: "Body Text" }),
     ],
     [],
@@ -30,7 +27,7 @@ export default function Submit() {
     setTitle,
     isSubmitting,
     handleSubmit,
-  } = useCreatePost(editor);
+  } = useSubmitPost(editor);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,83 +61,81 @@ export default function Submit() {
           handleFileSelect(files);
         }}
       />
-      <div className="relative my-custom-editor min-w-0">
-        {editor && (
-          <RichTextEditor variant="subtle" editor={editor}>
-            {imageFiles.length > 0 && (
-              <>
-                <SubmitImageOverlay />
-                {previewUrls.map((url, i) => (
-                  <div
-                    key={i}
-                    className="absolute inset-0 w-full h-full transition-opacity duration-200"
-                  >
-                    <img
-                      src={url}
-                      aria-hidden
-                      className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-75"
-                    />
-                    <img
-                      src={url}
-                      alt="preview img"
-                      className="relative w-full h-full object-contain"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(i)}
-                      aria-label="Remove image"
-                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </>
-            )}
-            <RichTextEditor.Content />
-            <RichTextEditor.Toolbar>
-              <RichTextEditor.ControlsGroup>
-                <RichTextEditor.Control
-                  aria-label="Insert image"
-                  title="Insert image"
-                  onClick={() => fileInputRef.current?.click()}
+
+      <div className="relative flex flex-col my-custom-editor min-w-0 ">
+        <RichTextEditor variant="subtle" editor={editor}>
+          {imageFiles.length > 0 && (
+            <div className={`relative w-full h-96 px-4 overflow-hidden`}>
+              <SubmitImageOverlay />
+              {previewUrls.map((url, i) => (
+                <div
+                  key={i}
+                  className="absolute inset-0 w-full h-full transition-opacity duration-200 "
                 >
-                  <ImageIcon size={16} />
-                </RichTextEditor.Control>
-                <RichTextEditor.Bold />
-                <RichTextEditor.Italic />
-                <RichTextEditor.Underline />
-                <RichTextEditor.Strikethrough />
-                <RichTextEditor.Code />
-                <RichTextEditor.ClearFormatting />
-              </RichTextEditor.ControlsGroup>
-              <RichTextEditor.ControlsGroup>
-                <RichTextEditor.BulletList />
-                <RichTextEditor.OrderedList />
-                <RichTextEditor.Blockquote />
-                <RichTextEditor.Hr />
-              </RichTextEditor.ControlsGroup>
-              <RichTextEditor.ControlsGroup>
-                <RichTextEditor.Link />
-                <RichTextEditor.Unlink />
-              </RichTextEditor.ControlsGroup>
-              <RichTextEditor.ControlsGroup>
-                <RichTextEditor.Undo />
-                <RichTextEditor.Redo />
-              </RichTextEditor.ControlsGroup>
-            </RichTextEditor.Toolbar>
-          </RichTextEditor>
-        )}
+                  <img
+                    src={url}
+                    aria-hidden
+                    className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-75"
+                  />
+                  <img
+                    src={url}
+                    alt="preview img"
+                    className="relative w-full h-full object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    aria-label="Remove image"
+                    className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  ></button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <RichTextEditor.Content />
+          <RichTextEditor.Toolbar>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.Control
+                aria-label="Insert image"
+                title="Insert image"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <ImageIcon size={16} />
+              </RichTextEditor.Control>
+              <RichTextEditor.Bold />
+              <RichTextEditor.Italic />
+              <RichTextEditor.Underline />
+              <RichTextEditor.Strikethrough />
+              <RichTextEditor.Code />
+              <RichTextEditor.ClearFormatting />
+            </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.BulletList />
+              <RichTextEditor.OrderedList />
+              <RichTextEditor.Blockquote />
+              <RichTextEditor.Hr />
+            </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.Link />
+              <RichTextEditor.Unlink />
+            </RichTextEditor.ControlsGroup>
+            <RichTextEditor.ControlsGroup>
+              <RichTextEditor.Undo />
+              <RichTextEditor.Redo />
+            </RichTextEditor.ControlsGroup>
+          </RichTextEditor.Toolbar>
+        </RichTextEditor>
       </div>
       <div className="flex justify-center">
         <button
-          className=" bg-green-900 text-white py-2 px-4 rounded-full hover:cursor-pointer hover:brightness-85 w-25 text-center disabled:opacity-75 duration-200"
+          className={`flex justify-center items-center max-h-11 max-w-1/2  bg-green-900 text-white py-2 px-4 rounded-full hover:cursor-pointer hover:brightness-85  text-center disabled:opacity-75 duration-200 ${isSubmitting && "opacity-75"}`}
           type="submit"
           disabled={title.length < 3}
         >
           {isSubmitting ? (
-            <div className="flex items-center justify-center h-10 opacity-75 rounded-full pointer-events-none w-25 py-4 px-4">
-              <div className="w-7 h-7 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
+            <div className="flex justify-center opacity-75 rounded-full pointer-events-none w-25 py-4 px-4">
+              <div className="w-7 h-7 border-3 border-t-white rounded-full animate-spin" />
             </div>
           ) : (
             "Submit"
