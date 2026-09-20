@@ -1,44 +1,22 @@
 import { supabase } from "@/lib/supabaseClient";
+import type { JSONContent } from "@tiptap/react";
 
 export async function createPost(
   title: string,
-  body: string,
-  post_type: string,
+  body?: JSONContent,
+  imageFiles?: File[],
 ) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${session?.access_token}`,
-    },
-    body: JSON.stringify({ title, body, post_type }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message);
-  }
-
-  return data;
-}
-
-export async function createImagePost(
-  title: string,
-  post_type: string,
-  imageFile: File,
-) {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
   const formData = new FormData();
+
   formData.append("title", title);
-  formData.append("post_type", post_type);
-  formData.append("image", imageFile);
+  formData.append("body", JSON.stringify(body));
+  if (imageFiles) {
+    imageFiles.forEach((imageFile) => formData.append("imageFiles", imageFile));
+  }
 
   const response = await fetch(`${import.meta.env.VITE_API_URL}/api/posts`, {
     method: "POST",
@@ -53,6 +31,7 @@ export async function createImagePost(
   if (!response.ok) {
     throw new Error(data.message);
   }
+
   return data;
 }
 

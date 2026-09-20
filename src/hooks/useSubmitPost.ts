@@ -1,105 +1,66 @@
-import { useState, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { createPost, createImagePost } from "@/services/posts";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import type { Editor } from "@tiptap/react";
+import { createPost } from "@/services/posts";
 import { useAuth } from "@/context/authContext";
+import { useToast } from "@/context/toastContext";
 
-export const PostType = {
-  Text: "text",
-  Image: "image",
-  Link: "link",
-} as const;
-
-export type PostType = (typeof PostType)[keyof typeof PostType];
-
-export function useSubmitPost() {
-  const { isLoggedIn } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [postTitle, setPostTitle] = useState("");
-  const [textBody, setTextBody] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [linkUrl, setLinkUrl] = useState("");
+export function useCreatePost(editor: Editor | null) {
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [title, setTitle] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const type = (searchParams.get("type") as PostType) ?? PostType.Text;
 
-  function handleTypeChange(newType: PostType) {
-    setSearchParams({ type: newType });
-  }
+  const { isLoggedIn } = useAuth();
+  const { showToast } = useToast();
+  const navigate = useNavigate();
+
+  const handleFileSelect = (selected: File[]) => {
+    const newUrls = selected.map((f) => URL.createObjectURL(f));
+    setImageFiles((prev) => [...prev, ...selected]);
+    setPreviewUrls((prev) => [...prev, ...newUrls]);
+  };
+
+  const removeImage = (index: number) => {
+    setPreviewUrls((prev) => {
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  useEffect(() => {
+    return () => previewUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, [previewUrls]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (isSubmitting) return;
-    setError("");
+    if (isSubmitting || !editor) return;
     setIsSubmitting(true);
 
     try {
       if (!isLoggedIn) {
-        throw new Error("You must be logged in to post.");
+        throw new Error("Register an account in order to submit a post");
       }
-      if (type === PostType.Image) {
-        if (!imageFile) {
-          throw new Error("Please select an image");
-        }
-        const { post } = await createImagePost(postTitle, type, imageFile);
-        navigate(`/comments/${post.id}`);
-      } else {
-        const body = type === PostType.Text ? textBody : normalizeUrl(linkUrl);
-        const { post } = await createPost(postTitle, body, type);
-        navigate(`/comments/${post.id}`);
-      }
-      setPostTitle("");
-      setTextBody("");
-      setLinkUrl("");
-      setImageFile(null);
-    } catch (err: any) {
-      setError(err.message);
+      const content = editor.getJSON();
+      const { post } = await createPost(title, content, imageFiles);
+      showToast("Post submitted successfully");
+      navigate(`/comments/${post.id}`);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  const isDisabled =
-    !postTitle.trim() ||
-    (type === PostType.Text && !textBody) ||
-    (type === PostType.Image && !imageFile) ||
-    (type === PostType.Link && !linkUrl);
-
   return {
-    type,
-    postTitle,
-    setPostTitle,
-    textBody,
-    setTextBody,
-    imageFile,
-    setImageFile,
-    linkUrl,
-    setLinkUrl,
-    error,
+    imageFiles,
+    previewUrls,
+    handleFileSelect,
+    removeImage,
+    title,
+    setTitle,
     isSubmitting,
-    isDisabled,
-    fileInputRef,
-    handleTypeChange,
     handleSubmit,
   };
-}
-
-function normalizeUrl(val: string) {
-  const input = val.trim();
-
-  if (!input) {
-    throw new Error("URL is required");
-  }
-  const url = new URL(/^https?:\/\//i.test(input) ? input : `https://${input}`);
-
-  if (url.protocol !== "http:" && url.protocol !== "https:") {
-    throw new Error("Invalid URL protocol");
-  }
-
-  if (!url.hostname.includes(".")) {
-    throw new Error("URL must contain a valid domain");
-  }
-
-  return url.href;
 }
