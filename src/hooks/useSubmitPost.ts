@@ -5,7 +5,7 @@ import { createPost } from "@/services/posts";
 import { useAuth } from "@/context/authContext";
 import { useToast } from "@/context/toastContext";
 
-export function useCreatePost(editor: Editor | null) {
+export function useSubmitPost(editor: Editor | null) {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [title, setTitle] = useState("");
@@ -42,12 +42,13 @@ export function useCreatePost(editor: Editor | null) {
       if (!isLoggedIn) {
         throw new Error("Register an account in order to submit a post");
       }
-      const content = editor.getJSON();
+      const content = editor.isEmpty ? null : editor.getJSON();
       const { post } = await createPost(title, content, imageFiles);
       showToast("Post submitted successfully");
       navigate(`/comments/${post.id}`);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Something went wrong");
+      console.log(err);
     } finally {
       setIsSubmitting(false);
     }
