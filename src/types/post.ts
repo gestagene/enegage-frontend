@@ -7,15 +7,14 @@ export interface Post {
   id: string;
   title: string;
   body: string | null;
-  post_type: "text" | "image" | "link";
-  link_url: string;
   vote_score: number;
   created_at: string;
   users: {
     username: string;
     institute: string | null;
   };
-  media: Media[];
+  media?: Media[];
+  user_id?: string;
   user_vote: vote | null;
   comment_count?: number;
 }

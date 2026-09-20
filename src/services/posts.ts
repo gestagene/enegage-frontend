@@ -3,7 +3,7 @@ import type { JSONContent } from "@tiptap/react";
 
 export async function createPost(
   title: string,
-  body?: JSONContent,
+  body?: JSONContent | null,
   imageFiles?: File[],
 ) {
   const {
@@ -57,7 +57,6 @@ export async function getPost(id: string) {
   if (!response.ok) {
     throw new Error(data.message);
   }
-
   return data.post;
 }
 
