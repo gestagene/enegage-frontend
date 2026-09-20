@@ -24,8 +24,8 @@
 
 button.rte-control-button {
   display: inline-flex;
-  align-items: start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   height: 2rem;
   width: 2rem;
   padding: 0;
