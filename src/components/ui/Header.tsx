@@ -22,62 +22,63 @@ export default function Header({
 }: HeaderProps) {
   const navigate = useNavigate();
   return (
-    <>
-      <header className="border-b border-gray-200 sticky top-0 text-sm">
-        <div className="flex justify-between items-center mx-5 my-2">
-          <div className="md:hidden mr-5">
-            <RxHamburgerMenu />
-          </div>
-          <div className="hidden md:block">
-            <h1 className=" text-yellow-500/90 text-3xl font-bold font-[Outfit] subpixel-antialiased">
-              enegage
-            </h1>
-          </div>
-          <form action="" className="w-1/2 md:w-1/3 max-w-150">
-            <label className="w-full items-center border rounded-gradient-border rounded-full p-2 flex">
-              <CiSearch size={20} />
-              <input
-                type="search"
-                placeholder="Find anything"
-                className="pl-2 w-full outline-none"
-                onChange={(e) => onSearch(e.target.value)}
-              />
-            </label>
-          </form>
-          <div>
-            {!isLoggedIn ? (
-              <button
-                onClick={onLoginClick}
-                className="rounded-full p-2 px-4 text-white bg-green-900/90 hover:brightness-75 hover:cursor-pointer"
-              >
-                Log In
-              </button>
-            ) : (
-              <div className="flex justify-between space-x-2 items-center">
-                <button
-                  onClick={() => navigate("/submit")}
-                  type="button"
-                  className="hover:bg-gray-200 hover:cursor-pointer scale-100 text-[0.80rem] font-semibold flex p-1.5 rounded-full justify-center items-center"
-                >
-                  <IoCreateOutline size={20} className="mr-1.5 mb-0.5" />
-                  Create
-                </button>
-                <RiNotification2Line
-                  size={30}
-                  className="hover:bg-gray-200 hover:cursor-pointer rounded-2xl p-1.5"
-                />
-                <button
-                  onClick={handleProfileMenu}
-                  className="hover:cursor-pointer"
-                >
-                  <CgProfile size={30} className="ml-2" />
-                </button>
-              </div>
-            )}
-          </div>
+    <header className="border-b border-gray-200 sticky top-0 text-sm shrink-0 bg-white z-2">
+      <div className="flex justify-between items-center mx-5 my-2">
+        <div className="md:hidden mr-5">
+          <RxHamburgerMenu />
         </div>
-      </header>
-    </>
+        <div className="hidden md:block">
+          <h1
+            onClick={() => navigate("/")}
+            className=" text-amber-500 text-3xl font-bold font-[Outfit] subpixel-antialiased hover:cursor-pointer   "
+          >
+            enegage
+          </h1>
+        </div>
+        <form action="" className="flex-1 sm:max-w-120">
+          <label className="w-full items-center border rounded-gradient-border rounded-full p-2 flex">
+            <CiSearch size={20} />
+            <input
+              type="search"
+              placeholder="Find anything"
+              className="pl-2 w-full outline-none"
+              onChange={(e) => onSearch(e.target.value)}
+            />
+          </label>
+        </form>
+        <div>
+          {!isLoggedIn ? (
+            <button
+              onClick={onLoginClick}
+              className="rounded-full p-2 px-4 text-white bg-green-900/90 hover:brightness-75 hover:cursor-pointer"
+            >
+              Log In
+            </button>
+          ) : (
+            <div className="flex justify-between space-x-2 items-center shrink">
+              <button
+                onClick={() => navigate("/submit")}
+                type="button"
+                className="hover:bg-gray-200 hover:cursor-pointer scale-100 text-[0.80rem] font-semibold flex p-1.5 rounded-full justify-center items-center"
+              >
+                <IoCreateOutline size={20} className="mr-1.5 mb-0.5" />
+                Create
+              </button>
+              <RiNotification2Line
+                size={30}
+                className="hover:bg-gray-200 hover:cursor-pointer rounded-2xl p-1.5"
+              />
+              <button
+                onClick={handleProfileMenu}
+                className="hover:cursor-pointer"
+              >
+                <CgProfile size={30} className="ml-2" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }
 //CgProfile icon is a placeholder for the actual profile picture of the user.
