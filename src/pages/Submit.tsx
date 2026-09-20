@@ -1,188 +1,152 @@
-import { MdOutlineFileUpload } from "react-icons/md";
-import { useSubmitPost, PostType } from "@/hooks/useSubmitPost";
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import Placeholder from "@tiptap/extension-placeholder";
+import { RichTextEditor, Link } from "@/components/editor";
+import { ImageIcon } from "lucide-react";
+import { useMemo, useRef } from "react";
+import SubmitImageOverlay from "@/components/ui/SubmitImageOverlay";
+import { useCreatePost } from "@/hooks/useSubmitPost";
+import "@/components/editor/style.css";
 
-export default function SubmitPage() {
+export default function Submit() {
+  const extensions = useMemo(
+    () => [
+      StarterKit.configure({ heading: { levels: [1, 2, 3, 4, 5, 6] } }),
+      Link,
+      Underline,
+      Placeholder.configure({ placeholder: "Body Text" }),
+    ],
+    [],
+  );
+  const editor = useEditor({ shouldRerenderOnTransaction: false, extensions });
+
   const {
-    type,
-    postTitle,
-    setPostTitle,
-    textBody,
-    setTextBody,
-    imageFile,
-    setImageFile,
-    linkUrl,
-    setLinkUrl,
-    error,
+    imageFiles,
+    previewUrls,
+    handleFileSelect,
+    removeImage,
+    title,
+    setTitle,
     isSubmitting,
-    isDisabled,
-    fileInputRef,
-    handleTypeChange,
     handleSubmit,
-    isDragging,
-    setIsDragging,
-    previewUrl,
-  } = useSubmitPost();
+  } = useCreatePost(editor);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   return (
-    <div>
-      <div className="max-w-3xl w-full flex flex-col justify-center items-center px-12 py-9">
-        <div className="w-full">
-          <h1 className="font-bold text-2xl py-3">Create a post</h1>
-          <div className="relative flex w-full text-sm">
-            <button
-              onClick={() => {
-                handleTypeChange(PostType.Text);
-              }}
-              className="w-full pb-1 pt-1 block rounded-sm hover:bg-gray-200/50 hover:cursor-pointer"
-            >
-              Text
-            </button>
-            <button
-              onClick={async () => {
-                handleTypeChange(PostType.Image);
-              }}
-              className="w-full pb-1 pt-1 block rounded-sm hover:bg-gray-200/50 hover:cursor-pointer"
-            >
-              Images & Video
-            </button>
-            <button
-              onClick={async () => {
-                handleTypeChange(PostType.Link);
-              }}
-              className="w-full pb-1 pt-1 block rounded-sm hover:bg-gray-200/50 hover:cursor-pointer"
-            >
-              Link
-            </button>
-          </div>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col justify-center max-w-2xl"
-          >
-            <div className="pt-2 relative w-full">
-              <input
-                className="peer border border-gray-200 rounded-lg p-2 w-full "
-                type="text"
-                value={postTitle}
-                required
-                onChange={(e) => {
-                  setPostTitle(e.target.value);
-                }}
-              />
-              <label
-                className="
-                peer-focus:top-0
-                peer-focus:text-[11px]
-
-                peer-valid:top-0
-                peer-valid:text-[11px] after:content-['*'] after:text-red-500 after:text-sm after:ml-2 absolute left-3 top-[60%] translate-y-[-60%] bg-transparent py-1.5 text-[#888] pointer-events-none duration-200 ease-in-out text-sm"
-              >
-                Title
-              </label>
-            </div>
-            <div className="flex flex-col mt-4">
-              {type === PostType.Text && (
-                <textarea
-                  className="peer resize-none rounded-lg w-full p-3 border-gray-200 border placeholder:text-sm "
-                  name="body-text"
-                  placeholder="Body Text"
-                  id="body-text"
-                  rows={10}
-                  value={textBody}
-                  onChange={(e) => {
-                    setTextBody(e.target.value);
-                  }}
-                ></textarea>
-              )}
-
-              {type === PostType.Image && (
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setIsDragging(true);
-                  }}
-                  onDragLeave={(e) => {
-                    e.preventDefault();
-                    setIsDragging(false);
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setIsDragging(false);
-                  }}
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`relative flex flex-col justify-center items-center sm:w-full min-h-64 border rounded-lg hover:cursor-pointer  ${isDragging ? "border-blue-500 text-blue-500 font-bold filter drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] " : "border-gray-200"}`}
-                >
-                  {previewUrl ? (
-                    <div className="relative w-full h-64 rounded-lg overflow-hidden">
-                      <img
-                        src={previewUrl}
-                        aria-hidden
-                        className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-75"
-                      />
-                      <img
-                        src={previewUrl}
-                        alt={"preview img"}
-                        className="relative w-full h-full object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <span className={`py-2`}>
-                        {isDragging
-                          ? "Drop your file here"
-                          : "Drag and drop a file, or click to upload"}
-                      </span>
-                      <MdOutlineFileUpload size={35} />
-                    </>
-                  )}
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    accept="image/*,video/*"
-                    onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-                  />
-                </div>
-              )}
-              {type === PostType.Link && (
-                <div className="pt-2 relative w-full">
-                  <input
-                    className="peer border border-gray-200 rounded-lg p-2 w-full "
-                    type="text"
-                    value={linkUrl}
-                    required
-                    onChange={(e) => {
-                      setLinkUrl(e.target.value);
-                    }}
-                  />
-                  <label
-                    className="peer-focus:top-0
-                peer-focus:text-[11px]
-
-                peer-valid:top-0
-                peer-valid:text-[11px] after:content-['*'] after:text-red-500 after:text-sm after:ml-2 absolute left-3 top-[60%] translate-y-[-60%] bg-transparent py-1.5 text-[#888] pointer-events-none duration-200 ease-in-out text-sm"
-                  >
-                    Link URL
-                  </label>
-                </div>
-              )}
-            </div>
-            <div className="flex py-5 relative justify-center">
-              {!isSubmitting ? (
-                <input
-                  type="submit"
-                  value="Submit"
-                  disabled={isDisabled}
-                  className="bg-green-900 text-white py-2 px-4 rounded-full hover:cursor-pointer hover:brightness-85 w-25 text-center disabled:opacity-75 duration-200"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-10 opacity-75 rounded-full pointer-events-none w-25 py-2 px-4">
-                  <div className="w-8 h-8 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
-                </div>
-              )}
-            </div>
-          </form>
-        </div>
+    <form
+      onSubmit={handleSubmit}
+      className="relative flex flex-col gap-4 p-4 sm:px-6 min-w-0 min-h-0 max-w-200 shadow-sm rounded-sm"
+    >
+      <div className="text-2xl font-bold">Create a post</div>
+      <div className="pt-2 relative w-full">
+        <input
+          className="focus:outline-0 peer p-2 w-full"
+          type="text"
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <label className="peer-focus:top-0 peer-focus:text-[11px] peer-valid:top-0 peer-valid:text-[11px] after:content-['*'] after:text-red-500 after:text-sm after:ml-2 absolute left-3 top-[60%] translate-y-[-60%] bg-transparent py-1.5 text-[#888] pointer-events-none duration-200 ease-in-out text-lg">
+          Title
+        </label>
       </div>
-    </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="hidden"
+        multiple
+        accept="image/*,video/*"
+        onChange={(e) => {
+          const files = Array.from(e.target.files ?? []);
+          if (files.length === 0) return;
+          handleFileSelect(files);
+        }}
+      />
+      <div className="relative my-custom-editor min-w-0">
+        {editor && (
+          <RichTextEditor variant="subtle" editor={editor}>
+            {imageFiles.length > 0 && (
+              <>
+                <SubmitImageOverlay />
+                {previewUrls.map((url, i) => (
+                  <div
+                    key={i}
+                    className="absolute inset-0 w-full h-full transition-opacity duration-200"
+                  >
+                    <img
+                      src={url}
+                      aria-hidden
+                      className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-75"
+                    />
+                    <img
+                      src={url}
+                      alt="preview img"
+                      className="relative w-full h-full object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(i)}
+                      aria-label="Remove image"
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </>
+            )}
+            <RichTextEditor.Content />
+            <RichTextEditor.Toolbar>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.Control
+                  aria-label="Insert image"
+                  title="Insert image"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImageIcon size={16} />
+                </RichTextEditor.Control>
+                <RichTextEditor.Bold />
+                <RichTextEditor.Italic />
+                <RichTextEditor.Underline />
+                <RichTextEditor.Strikethrough />
+                <RichTextEditor.Code />
+                <RichTextEditor.ClearFormatting />
+              </RichTextEditor.ControlsGroup>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.BulletList />
+                <RichTextEditor.OrderedList />
+                <RichTextEditor.Blockquote />
+                <RichTextEditor.Hr />
+              </RichTextEditor.ControlsGroup>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.Link />
+                <RichTextEditor.Unlink />
+              </RichTextEditor.ControlsGroup>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.Undo />
+                <RichTextEditor.Redo />
+              </RichTextEditor.ControlsGroup>
+            </RichTextEditor.Toolbar>
+          </RichTextEditor>
+        )}
+      </div>
+      <div className="flex justify-center">
+        <button
+          className=" bg-green-900 text-white py-2 px-4 rounded-full hover:cursor-pointer hover:brightness-85 w-25 text-center disabled:opacity-75 duration-200"
+          type="submit"
+          disabled={title.length < 3}
+        >
+          {isSubmitting ? (
+            <div className="flex items-center justify-center h-10 opacity-75 rounded-full pointer-events-none w-25 py-4 px-4">
+              <div className="w-7 h-7 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            "Submit"
+          )}
+        </button>
+      </div>
+    </form>
   );
 }
