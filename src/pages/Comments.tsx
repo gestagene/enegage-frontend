@@ -12,6 +12,9 @@ import { getComments } from "@/services/comments";
 import type { Comment } from "@/types/comment";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
 import { votePost } from "@/services/votes";
+import { useToast } from "@/context/toastContext";
+import { RichTextContent } from "@/components/RichTextContent";
+
 export default function Comments() {
   const { id } = useParams();
   const [refreshKey, setRefreshKey] = useState(0);
@@ -41,6 +44,7 @@ function CommentsLoader({
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function fetchPost() {
@@ -49,7 +53,7 @@ function CommentsLoader({
         const result = await getPost(id);
         setPost(result);
       } catch (err: any) {
-        setError(err.message);
+        showToast(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -67,7 +71,9 @@ function CommentsLoader({
 
   if (error || !post) {
     return (
-      <p className="text-red-500 text-center">{error || "Post not found"}</p>
+      <p className="text-red-500 text-center">
+        {error || "Something went wrong while loading this post"}
+      </p>
     );
   }
 
@@ -121,13 +127,14 @@ function CommentsContent({
             />
           </div>
         )}
-        {post.body || post.link_url}
+        <RichTextContent content={post.body} />
       </div>
       <ActionBar
         variant="post"
         voteScore={voteScore}
         vote={vote}
         handleVote={handleVote}
+        commentCount={post.comment_count}
       />
       <CommentBox postId={post.id} onCommentPosted={onCommentPosted} />
     </div>
@@ -149,7 +156,7 @@ function CommentSection({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center  ">
         <div className="w-8 h-8 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -158,12 +165,12 @@ function CommentSection({
   if (error) {
     return (
       <p className="text-red-500 text-center">
-        {error || "Error loading comments"}
+        {error || "Something went wrong while loading the comments"}
       </p>
     );
   }
   return (
-    <div className="flex-col flex space-y-4 w-full px-4 pb-2">
+    <div className="flex-col flex space-y-4 px-4 pb-2">
       {comments.map((comment) => (
         <CommentCard key={comment.id} comment={comment} />
       ))}
