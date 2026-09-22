@@ -4,26 +4,60 @@ import HomePage from "@/pages/HomeFeed";
 import Fallback from "@/pages/Fallback";
 import SubmitPage from "@/pages/Submit";
 import PopularPage from "@/pages/Popular";
-import ProtectedRoute from "./components/ui/ProtectedRoute";
-
+import ProtectedRoute from "@/components/ProtectedRoute";
+import Comments from "@/pages/Comments";
+import ScrollToTop from "./components/ui/Scroll";
+import SettingsPage from "@/pages/Settings/Settings";
+import Account from "@/pages/Settings/Account";
+import Profile from "@/pages/Settings/Profile";
 function App() {
   return (
-    <Routes>
-      <Route element={<RootLayout />}>
-        <Route index path="/" element={<HomePage />} />
-        <Route
-          path="/submit"
-          element={
-            <ProtectedRoute>
-              <SubmitPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="popular" element={<PopularPage />} />
-      </Route>
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route index path="/" element={<HomePage />} />
+          <Route
+            path="/submit"
+            element={
+              <ProtectedRoute>
+                <SubmitPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Account />} />
+            <Route
+              path="account"
+              element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+          <Route path="/comments/:id/:slug?" element={<Comments />} />
+          <Route path="popular" element={<PopularPage />} />
+        </Route>
 
-      <Route path="*" element={<Fallback />} />
-    </Routes>
+        <Route path="*" element={<Fallback />} />
+      </Routes>
+    </>
   );
 }
 
