@@ -46,6 +46,7 @@ export default function Login({ onSuccess }: LoginProps) {
       </div>
       {!isLoading ? (
         <input
+          disabled={!email || !password}
           type="submit"
           className="w-full p-2.5 bg-green-900 text-white rounded-full hover:cursor-pointer hover:brightness-85 disabled:opacity-75 duration-200"
           value="Submit"
