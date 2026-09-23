@@ -10,10 +10,8 @@ export function useFetch<T>(fn: () => Promise<T>, deps: DependencyList = []) {
       try {
         const result = await fn();
         setData(result);
-        console.log(result);
       } catch (err: any) {
         setError(err.message);
-        console.log(err);
       } finally {
         setIsLoading(false);
       }
