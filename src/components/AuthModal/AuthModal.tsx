@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { useAuthForm } from "@/hooks/useAuthForm";
+import { useLogin } from "@/hooks/useLogin";
 import { X } from "lucide-react";
 import Login from "@/components/AuthModal/Login";
 import Signup from "@/components/AuthModal/Signup";
@@ -14,7 +14,7 @@ interface AuthModalProps {
 export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<"login" | "signup">("login");
-  const { handleGoogleLogin } = useAuthForm(onSuccess, onClose);
+  const { handleGoogleLogin } = useLogin(onSuccess);
 
   return (
     <div
@@ -50,10 +50,10 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
           <span className="text-sm text-gray-400">OR</span>
         </div>
         {/*Content */}
-        {view === "login" && <Login />}
+        {view === "login" && <Login onSuccess={onSuccess} />}
         {view === "signup" && <Signup />}
         {/*Footer */}
-        <div className="flex flex-col text-xs gap-4 place-items-start w-full px-2">
+        <div className="flex flex-col text-sm gap-4 place-items-start w-full px-2">
           {view === "login" && (
             <>
               <a href="" className="text-[#0000EE] hover:text-[#551A8B]">
@@ -63,7 +63,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
                 New to enegage?
                 <button
                   onClick={() => setView("signup")}
-                  className="text-[#0000EE] hover:text-[#551A8B] text-xs"
+                  className="text-[#0000EE] hover:text-[#551A8B] text-sm"
                 >
                   Sign up
                 </button>
@@ -71,7 +71,7 @@ export default function AuthModal({ onClose, onSuccess }: AuthModalProps) {
             </>
           )}
           {view === "signup" && (
-            <div className="text-xs">
+            <div className="text-sm">
               Already a user?{" "}
               <a
                 onClick={() => setView("login")}
