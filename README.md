@@ -1,73 +1,53 @@
-# React + TypeScript + Vite
+# Enegage
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Reddit-inspired social platform built with React, TypeScript, Express, and Supabase. Enegage allows users to create posts, interact with content through voting and comments, and manage their profiles through a modern, responsive interface.
 
-Currently, two official plugins are available:
+### Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Authentication
 
-## React Compiler
+Email and password authentication
+Email verification
+Google OAuth
+Protected routes
+Persistent authentication state
+Username setup for new users
+User profile management
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Posts
 
-## Expanding the ESLint configuration
+Create posts (similar to reddit)
+Rich-text post editor
+Multiple image previews
+Post editing and deletion
+Post voting with optimistic UI updates
+Denormalized vote scores for efficient display
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### User Experience
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Responsive Reddit-inspired interface
+Toast notifications
+Loading states and skeletons
+Optimistic UI interactions
+Profile and account settings
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Frontend
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+React — UI library
+TypeScript — Type safety
+Vite — Development and build tooling
+Tailwind CSS — Styling
+React Router — Client-side routing
+Tiptap — Rich-text editing
+shadcn/ui — UI components
+Lucide React — Icons
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Backend
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Node.js
+Express
+TypeScript
+Zod — Request validation
+REST API — Client-server communication
