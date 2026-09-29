@@ -24,7 +24,7 @@ export function RichTextContent({
 
   return (
     <div
-      className="rte-content"
+      className="rte-content pt-2 text-justify"
       dangerouslySetInnerHTML={{ __html: safeHtml }}
     />
   );

@@ -1,6 +1,6 @@
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
 import type { Comment } from "@/types/comment";
-import ActionBar from "./ui/ActionBar";
+import ActionBar from "@/components/ui/ActionBar";
 import { useVote } from "@/hooks/useVote";
 import { voteComment } from "@/services/votes";
 

@@ -2,6 +2,7 @@ import { userLogout } from "@/services/authService";
 import { IoSettingsOutline } from "react-icons/io5";
 import { GoQuestion } from "react-icons/go";
 import { RiLogoutBoxLine } from "react-icons/ri";
+import { NavLink } from "react-router-dom";
 
 interface ProfileMenuProps {
   menuRef: React.Ref<HTMLDivElement | null>;
@@ -18,12 +19,17 @@ export default function ProfileMenu({ onLogout, menuRef }: ProfileMenuProps) {
           <div></div>View Profile
         </div>
       </button>
-      <button className="hover:bg-gray-200 hover:cursor-pointer flex px-6 py-2">
-        <div className="flex gap-2 items-center">
-          <IoSettingsOutline size={20} />
-          Settings
-        </div>
-      </button>
+      <NavLink
+        className={"hover:bg-gray-200 hover:cursor-pointer flex px-6 py-2"}
+        to="settings"
+      >
+        <button>
+          <div className="flex gap-2 items-center">
+            <IoSettingsOutline size={20} />
+            Settings
+          </div>
+        </button>
+      </NavLink>
       <button className="hover:bg-gray-200 hover:cursor-pointer flex px-6 py-2">
         <div className="flex gap-2 items-center">
           <GoQuestion size={20} />

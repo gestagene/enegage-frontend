@@ -2,14 +2,14 @@ import { BsThreeDots } from "react-icons/bs";
 import type { Post } from "@/types/post.ts";
 import { useNavigate } from "react-router-dom";
 import { toSlug } from "@/lib/slugify";
-import ActionBar from "./ActionBar";
+import ActionBar from "@/components/ui/ActionBar";
 import { useVote } from "@/hooks/useVote";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
 import { votePost } from "@/services/votes";
-import PostCardMenu from "./PostCardMenu";
+import PostCardMenu from "@/components/post//PostCardMenu";
 import { useState } from "react";
 import { useClickOutside } from "@/hooks/useClickOutside";
-import { RichTextContent } from "@/components/RichTextContent";
+import { RichTextContent } from "@/components/post/RichTextContent";
 interface PostCardProps {
   post: Post;
   isOwner: boolean;
@@ -58,16 +58,18 @@ export default function PostCard({
   );
   const postUrl = `/comments/${post.id}/${toSlug(post.title)}`;
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden">
       <div
         onClick={() => navigate(postUrl)}
         className="relative w-full text-justify px-2 pb-2 hover:bg-gray-100/50 hover:cursor-pointer rounded-2xl "
       >
-        <div className="relative flex justify-between items-center space-x-3 text-xs px-2 pb-2 pt-2 w-full ">
-          <div className="flex text-xs">
-            <span className="mx-1">
-              <img />
-            </span>
+        <div className="relative flex justify-between items-center text-xs px-2 pb-2 pt-2 w-full ">
+          <div className="flex text-xs items-center gap-2">
+            <img
+              className="shrink-0 max-w-8 rounded-full object-contain"
+              src={post.users.avatar_url}
+            />
+
             <span className="after:content-['·'] after:mx-1">
               {post.users?.username ?? "Deleted User"}
             </span>
@@ -93,7 +95,7 @@ export default function PostCard({
         <div className="px-2">
           <span className="text-md font-bold">{post.title}</span>
         </div>
-        <div className="px-2 my-2 text-sm w-full rounded-2xl">
+        <div className="px-2 my-2 text-sm w-full rounded-2xl overflow-hidden max-h-128 line-clamp-6 text-justify  ">
           <PostContent post={post} />
         </div>
         <div onClick={(e) => e.stopPropagation()}>
