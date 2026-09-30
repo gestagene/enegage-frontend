@@ -4,16 +4,17 @@ import type { Post } from "@/types/post";
 import { useState, useEffect } from "react";
 import { IoArrowBackSharp } from "react-icons/io5";
 import ActionBar from "@/components/ui/ActionBar";
-import CommentBox from "@/components/ui/CommentBox";
+import CommentBox from "@/components/comment/CommentBox";
 import { useVote } from "@/hooks/useVote";
-import CommentCard from "@/components/CommentCard";
+import CommentCard from "@/components/comment/CommentCard";
 import { useFetch } from "@/hooks/useFetch";
 import { getComments } from "@/services/comments";
 import type { Comment } from "@/types/comment";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
 import { votePost } from "@/services/votes";
 import { useToast } from "@/context/toastContext";
-import { RichTextContent } from "@/components/RichTextContent";
+import { RichTextContent } from "@/components/post/RichTextContent";
+import Loading from "@/components/ui/Loading";
 
 export default function Comments() {
   const { id } = useParams();
@@ -64,7 +65,7 @@ function CommentsLoader({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
+        <Loading size={32} />
       </div>
     );
   }
@@ -97,14 +98,19 @@ function CommentsContent({
 
   return (
     <div className="px-4">
-      <div className="text-sm sm:text-xs flex items-center">
+      <div className="text-sm sm:text-xs flex items-center gap-2">
         <button
           onClick={() => navigate(-1)}
-          className="bg-gray-200 rounded-full py-1.5 px-1.5 lg:-ml-10 hover:brightness-90 hover:cursor-pointer"
+          className="fixed z-10 bg-gray-200 rounded-full py-1.5 px-1.5 lg:-ml-10 hover:brightness-90 hover:cursor-pointer"
         >
           <IoArrowBackSharp size={20} />
         </button>
-        <span className="mx-1"></span>
+        <span>
+          <img
+            className="shrink-0 max-w-8 rounded-full object-contain"
+            src={post.users.avatar_url}
+          />
+        </span>
         <span className="after:content-['·'] after:mx-1">
           {post.users?.username ?? "Deleted User"}
         </span>
@@ -155,11 +161,7 @@ function CommentSection({
   const comments = data ?? [];
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center  ">
-        <div className="w-8 h-8 border-3 border-green-900 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <Loading size={32} />;
   }
 
   if (error) {

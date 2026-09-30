@@ -5,6 +5,7 @@ export interface Comment {
   users: {
     username: string;
     institute: string | null;
+    avatar_url: string;
   };
   vote_score: number;
   content: string;
