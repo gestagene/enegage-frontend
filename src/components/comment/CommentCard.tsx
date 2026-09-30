@@ -15,23 +15,40 @@ export default function CommentCard({ comment }: CommentCardProps) {
   );
 
   return (
-    <div>
-      <div className="flex space-x-1 text-xs text-gray-500">
-        <span className="font-bold after:content-['·'] after:ml-1">
-          {comment.users?.username ?? "Deleted User"}
-        </span>
-        <span className="after:content-['·'] after:ml-1 after:font-bold">
-          {formatRelativeTime(comment.created_at)}
-        </span>
-        <span>{/*edited true/false */}</span>
+    <>
+      <div className="relative flex m-0 gap-2 min-w-0 w-full">
+        <div className="shrink-0">
+          <img
+            className="size-7 rounded-full object-contain"
+            src={comment.users.avatar_url}
+          />
+        </div>
+
+        <div className="flex flex-col min-w-0 flex-1 text-xs">
+          {/* User Info */}
+          <div className="flex items-center px-1 gap-1">
+            <span className="font-semibold after:content-['·'] after:ml-1">
+              {comment.users?.username ?? "Deleted User"}
+            </span>
+
+            <span>{formatRelativeTime(comment.created_at)}</span>
+
+            <span>{/* edited true/false */}</span>
+          </div>
+
+          {/* Content */}
+          <div className="p-1 text-[13px] font-medium text-justify wrap-break-word">
+            {comment.content}
+          </div>
+        </div>
       </div>
-      <div className="text-sm text-justify pt-1">{comment.content}</div>
+
       <ActionBar
         vote={vote}
         voteScore={voteScore}
         handleVote={handleVote}
         variant="comment"
       />
-    </div>
+    </>
   );
 }
