@@ -35,19 +35,25 @@ Profile and account settings
 
 ### Frontend
 
-React — UI library
-TypeScript — Type safety
-Vite — Development and build tooling
-Tailwind CSS — Styling
-React Router — Client-side routing
-Tiptap — Rich-text editing
-shadcn/ui — UI components
-Lucide React — Icons
+- React — UI library
+- TypeScript — Type safety
+- Vite — Development and build tooling
+- Tailwind CSS — Styling
+- React Router — Client-side routing
+- Tiptap — Rich-text editing
+- shadcn/ui — UI components
+- Lucide React — Icons
 
-### Backend
+### Backend [🔗 Repository](https://github.com/gestagene/enegage-backend)
 
-Node.js
-Express
-TypeScript
-Zod — Request validation
-REST API — Client-server communication
+- Node.js
+- Express
+- TypeScript
+- Zod — Request validation
+- REST API — Client-server communication
+
+### Database & Authentication
+
+- Supabase
+- PostgreSQL
+- Supabase Auth
