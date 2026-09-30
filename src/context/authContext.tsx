@@ -17,6 +17,7 @@ export type AuthContextType = {
   needsUsername: boolean;
   setNeedsUsername: React.Dispatch<React.SetStateAction<boolean>>;
   refreshProfile: () => Promise<void>;
+  profileLoading: boolean;
 };
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -25,23 +26,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [needsUsername, setNeedsUsername] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const checkUsername = useCallback(async (currentUser: User | null) => {
     if (!currentUser) {
       setNeedsUsername(false);
       return;
     }
-    const { data, error } = await supabase
-      .from("users")
-      .select("username")
-      .eq("id", currentUser.id)
-      .maybeSingle();
 
-    if (error) {
-      console.error("Failed to check username:", error);
-      return;
+    setProfileLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("username")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Failed to check username:", error);
+        return;
+      }
+      setNeedsUsername(!data?.username);
+    } finally {
+      setProfileLoading(false);
     }
-    setNeedsUsername(!data?.username);
   }, []);
 
   useEffect(() => {
@@ -57,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setIsLoggedIn(!!session);
       setUser(session?.user ?? null);
+      if (session?.user) setProfileLoading(true);
       setTimeout(() => checkUsername(session?.user ?? null), 0);
     });
 
@@ -81,6 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         needsUsername,
         setNeedsUsername,
         refreshProfile,
+        profileLoading,
       }}
     >
       {children}
