@@ -9,10 +9,16 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import AuthModal from "@/components/auth/AuthModal";
-import UsernamePopup from "@/components/onboarding/UsernameSetup";
+import UsernameSetup from "@/components/onboarding/UsernameSetup";
 
 export default function RootLayout() {
-  const { isLoggedIn, setIsLoggedIn, isLoading, needsUsername } = useAuth();
+  const {
+    isLoggedIn,
+    setIsLoggedIn,
+    isLoading,
+    needsUsername,
+    profileLoading,
+  } = useAuth();
   const [query, setQuery] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -31,14 +37,8 @@ export default function RootLayout() {
       </div>
     );
   }
-  if (isLoggedIn && needsUsername) {
-    return <UsernamePopup />;
-  }
-  console.log("RootLayout:", {
-    isLoggedIn,
-    needsUsername,
-    isLoading,
-  });
+  if (isLoggedIn && needsUsername) return <UsernameSetup />;
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header
@@ -76,11 +76,11 @@ export default function RootLayout() {
             onCollapse={() => setShowNav(!showNav)}
           />
         </div>
-        <main className="flex flex-1 min-h-screen min-w-0">
+        <main className="flex flex-1 min-h-screen min-w-0 justify-center">
           <div className="flex flex-1 justify-center pt-4 min-w-0">
             <div className="relative flex flex-1 w-full max-w-250 min-w-0 gap-6">
               {/* Feed */}
-              <div className="flex-2 min-w-0">
+              <div className="flex-2 min-w-0 px-2">
                 <Outlet context={{ query }} />
               </div>
               {/* Right Sidebar */}
