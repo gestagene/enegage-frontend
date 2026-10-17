@@ -4,8 +4,9 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { RichTextEditor, Link } from "@/components/editor";
 import { ImageIcon } from "lucide-react";
 import { useMemo, useRef } from "react";
-import SubmitImageOverlay from "@/components/ui/SubmitImageOverlay";
+import SubmitImageOverlay from "@/components/post/SubmitImageOverlay";
 import { useSubmitPost } from "@/hooks/useSubmitPost";
+import Loading from "@/components/ui/Loading";
 import "@/components/editor/style.css";
 
 export default function Submit() {
@@ -27,6 +28,10 @@ export default function Submit() {
     setTitle,
     isSubmitting,
     handleSubmit,
+    current,
+    canAddMore,
+    next,
+    prev,
   } = useSubmitPost(editor);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,34 +67,44 @@ export default function Submit() {
         }}
       />
 
-      <div className="relative flex flex-col my-custom-editor min-w-0 ">
+      <div className="relative flex flex-col my-custom-editor min-w-0">
         <RichTextEditor variant="subtle" editor={editor}>
           {imageFiles.length > 0 && (
-            <div className={`relative w-full h-96 px-4 overflow-hidden`}>
-              <SubmitImageOverlay />
-              {previewUrls.map((url, i) => (
-                <div
-                  key={i}
-                  className="absolute inset-0 w-full h-full transition-opacity duration-200 "
-                >
-                  <img
-                    src={url}
-                    aria-hidden
-                    className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-75"
-                  />
-                  <img
-                    src={url}
-                    alt="preview img"
-                    className="relative w-full h-full object-contain"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(i)}
-                    aria-label="Remove image"
-                    className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                  ></button>
-                </div>
-              ))}
+            <div className="relative w-full h-72 overflow-hidden rounded-2xl ">
+              <SubmitImageOverlay
+                count={previewUrls.length}
+                current={current}
+                canAdd={canAddMore}
+                onAdd={() => fileInputRef.current?.click()}
+                onRemove={() => removeImage(current)}
+                onNext={next}
+                onPrev={prev}
+              />
+              {previewUrls.map((url, i) => {
+                return (
+                  <>
+                    <div
+                      key={url}
+                      className={`absolute inset-0 flex items-center justify-center bg-neutral-800 overflow-hidden transition-opacity duration-200 ${
+                        i === current
+                          ? "opacity-100"
+                          : "opacity-0 pointer-events-none"
+                      }`}
+                    >
+                      <img
+                        src={url}
+                        aria-hidden
+                        className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-60 overflow-hidden"
+                      />
+                      <img
+                        src={url}
+                        alt="preview"
+                        className="relative max-w-full max-h-full object-contain overflow-hidden"
+                      />
+                    </div>
+                  </>
+                );
+              })}
             </div>
           )}
 
@@ -100,6 +115,7 @@ export default function Submit() {
                 aria-label="Insert image"
                 title="Insert image"
                 onClick={() => fileInputRef.current?.click()}
+                disabled={previewUrls.length >= 5}
               >
                 <ImageIcon size={16} />
               </RichTextEditor.Control>
@@ -135,7 +151,7 @@ export default function Submit() {
         >
           {isSubmitting ? (
             <div className="flex justify-center opacity-75 rounded-full pointer-events-none w-25 py-4 px-4">
-              <div className="w-7 h-7 border-3 border-t-white rounded-full animate-spin" />
+              <Loading size={32} color={"border-gray-200"} />
             </div>
           ) : (
             "Submit"
