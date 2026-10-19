@@ -15,7 +15,7 @@ import { votePost } from "@/services/votes";
 import { useToast } from "@/context/toastContext";
 import { RichTextContent } from "@/components/post/RichTextContent";
 import Loading from "@/components/ui/Loading";
-
+import { ChevronLeft, ChevronRight } from "lucide-react";
 export default function Comments() {
   const { id } = useParams();
 
@@ -75,12 +75,16 @@ function CommentsLoader({ id }: { id: string }) {
 
 function CommentsContent({ post }: { post: Post }) {
   const navigate = useNavigate();
-  const imageUrl = post.media?.[0]?.media_url;
   const { vote, voteScore, handleVote } = useVote(
     (vote) => votePost(post.id, vote),
     post.user_vote,
     post.vote_score,
   );
+  const [current, setCurrent] = useState(0);
+  const mediaLength = post.media?.length ?? 0;
+
+  const next = () => setCurrent((c) => (c + 1) % mediaLength);
+  const prev = () => setCurrent((c) => (c - 1 + mediaLength) % mediaLength);
 
   return (
     <div className="px-4">
@@ -105,20 +109,61 @@ function CommentsContent({ post }: { post: Post }) {
 
       <div className="mb-4">
         <h1 className="text-[1.4rem] font-bold">{post.title}</h1>
-        {imageUrl && (
-          <div className="relative w-full h-full justify-center pointer-events-auto flex items-center overflow-hidden rounded-2xl">
-            <img
-              src={imageUrl}
-              aria-hidden
-              className="absolute inset-0 w-full h-full object-cover blur-xl scale-130 opacity-75"
-            />
-            <img
-              src={imageUrl}
-              alt={post.title}
-              className="relative flex justify-center items-center max-w-1/2 max-h-full object-contain inset-0 "
-            />
+
+        {mediaLength > 0 && (
+          <div className="relative my-3 aspect-video overflow-hidden rounded-2xl bg-neutral-800">
+            {post.media?.map((media, i) => (
+              <div
+                key={media.media_url}
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+                  i === current
+                    ? "opacity-100"
+                    : "opacity-0 pointer-events-none"
+                }`}
+              >
+                <img
+                  src={media.media_url}
+                  aria-hidden
+                  className="absolute inset-0 w-full h-full object-cover blur-xl scale-130 opacity-75"
+                />
+                <img
+                  src={media.media_url}
+                  alt={post.title}
+                  className="relative max-w-full max-h-full object-contain"
+                />
+              </div>
+            ))}
+
+            {mediaLength > 1 && (
+              <>
+                <button
+                  onClick={prev}
+                  type="button"
+                  aria-label="Previous image"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 z-10 rounded-full bg-neutral-900/70 text-white size-9 flex items-center justify-center hover:bg-neutral-900 hover:cursor-pointer"
+                >
+                  <ChevronLeft />
+                </button>
+                <button
+                  onClick={next}
+                  type="button"
+                  aria-label="Next image"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 z-10 rounded-full bg-neutral-900/70 text-white size-9 flex items-center justify-center hover:bg-neutral-900 hover:cursor-pointer"
+                >
+                  <ChevronRight />
+                </button>
+                <div className="absolute bottom-2 left-1/2 z-10 flex gap-1.5 bg-neutral-900/80 p-1 rounded-full">
+                  {post.media?.map((_, i) => (
+                    <span
+                      className={`size-1.5 rounded-full ${i === current ? "bg-white" : "bg-white/40"}`}
+                    ></span>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
+
         <RichTextContent content={post.body} />
       </div>
       <ActionBar
@@ -146,7 +191,7 @@ function CommentSection({ postId }: { postId: string }) {
     setNewComments((prev) => [created, ...prev]);
   };
 
-  // newest first, with no duplicates if the fetch also returned one of ours
+  // newest first and no duplicates
   const newIds = new Set(newComments.map((c) => c.id));
   const comments = [
     ...newComments,
